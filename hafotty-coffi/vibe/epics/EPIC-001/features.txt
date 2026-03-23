@@ -1,15 +1,172 @@
-EPIC-001 — Features
-===================
-
-[ ] Feature 1 — [feature name] — not started
-[ ] Feature 2 — [feature name] — not started
-[ ] Feature 3 — [feature name] — not started
+EPIC-001 — Home Page
+====================
+Project: Hafotty Coffi
+Files: hafotty-coffi/src/website/home/home.jsx + home.scss
+Colour tokens: hafotty-coffi/src/assets/scss/ui/colours.scss
 
 ---
-Stop implementation and begin testing when:
-- All features above are marked "in progress" or "done"
-- Core happy-path behaviour is working end-to-end
 
-How to test at that point:
-- Follow the steps in testing.txt for each completed feature
-- Run: npm run lint && npm run build
+Feat-001 | Colour Token Setup
+------------------------------
+Add all global colour variables to colours.scss.
+Tokens required:
+  --gold:         #EAC435
+  --blue-deep:    #345995
+  --teal:         #03CEA4
+  --red:          #FB4D3D
+  --crimson:      #CA1551
+  --white:        #FFFFFF
+  --black:        #000000
+  --text-dark:    #1A1A1A
+
+All subsequent features reference only these tokens — no hard-coded hex values anywhere.
+
+---
+
+Feat-002 | Home Page Shell + Layout
+-------------------------------------
+Create home.jsx and home.scss in hafotty-coffi/src/website/home/.
+The home page is the full-screen centred container that all sections sit inside.
+Layout:
+  - Full viewport height (min-height: 100vh)
+  - Flexbox column, align-items: center, justify-content: center
+  - Background: var(--blue-deep)
+  - All content centred horizontally and vertically on screen
+  - Max-width: 79.375rem (1270px), centred via margin: 0 auto
+Import colours.scss into home.scss.
+
+---
+
+Feat-003 | Logo / Site Title Heading
+--------------------------------------
+Render the site name "Hafotty Coffi" as the primary H1 at the top of the home page.
+Style:
+  - Font size: 3.5rem (56px)
+  - Font weight: 700
+  - Colour: var(--gold)
+  - Text-align: center
+  - Letter-spacing: 0.05em
+  - Margin bottom: 0.5rem
+
+---
+
+Feat-004 | Sub Heading
+------------------------
+A sub heading below the H1 — suggested copy: "What will it be today?"
+Style:
+  - Font size: 1.25rem (20px)
+  - Colour: var(--white)
+  - Text-align: center
+  - Margin bottom: 3rem (48px)
+  - Font weight: 400
+
+---
+
+Feat-005 | Coffee & Tea Buttons (side by side)
+------------------------------------------------
+Two CTA buttons rendered horizontally next to each other.
+Labels: "Coffee" and "Tea"
+Style (shared):
+  - Display: flex, gap: 1.5rem between buttons
+  - Each button: padding 1.25rem 3rem (20px 48px)
+  - Border radius: 0.5rem (8px)
+  - Font size: 1.125rem (18px)
+  - Font weight: 600
+  - Cursor: pointer
+  - Transition: transform 0.15s ease, box-shadow 0.15s ease
+
+Coffee button:
+  - Background: var(--red)
+  - Colour: var(--white)
+  - Box-shadow: 4px 4px 0 var(--black) (solid bottom-right shadow)
+  - Hover: background var(--crimson), translateY(-2px)
+  - Active: translateY(2px), box-shadow reduces to 2px 2px 0 (press-down effect)
+
+Tea button:
+  - Background: var(--teal)
+  - Colour: var(--black)
+  - Box-shadow: 4px 4px 0 var(--black)
+  - Hover: filter brightness(0.9), translateY(-2px)
+  - Active: translateY(2px), box-shadow reduces to 2px 2px 0
+
+Coffee button routes to /coffee via React Router <Link>.
+Tea button routes to /tea via React Router <Link>.
+
+---
+
+Feat-006 | Previous Orders Modal
+----------------------------------
+A "Previous Orders" button placed below the two main CTA buttons.
+Style:
+  - Small ghost button: no fill, border 1px solid var(--gold), colour var(--gold)
+  - Font size: 0.875rem (14px)
+  - Padding: 0.5rem 1.25rem
+  - Border radius: 0.375rem
+  - Margin top: 2rem
+  - Hover: background var(--gold), colour var(--black)
+
+On click: opens a modal overlay.
+Modal content:
+  - Backdrop: rgba(0,0,0,0.6), full screen, click backdrop to close
+  - Modal card: background var(--white), border radius 0.75rem, padding 2rem, max-width 28rem
+  - Heading: "Your Last Orders" — var(--blue-deep), font-size 1.25rem, font-weight 700
+  - Displays a list of up to 5 most recent mock orders (hardcoded data for now — array of objects with: id, drink, size, date)
+  - Each order row: drink name left, date right, separated by a light border-bottom
+  - If no orders: show "No orders yet — try something!" message
+  - Close button (×) top right of modal card
+Modal state managed with useState in home.jsx.
+Mock data example array defined inline in home.jsx:
+  [
+    { id: 1, drink: 'Flat White', size: 'Medium', date: '22 Mar 2026' },
+    { id: 2, drink: 'Earl Grey', size: 'Large',  date: '21 Mar 2026' },
+    { id: 3, drink: 'Espresso',  size: 'Small',  date: '20 Mar 2026' },
+    { id: 4, drink: 'Green Tea', size: 'Medium', date: '19 Mar 2026' },
+    { id: 5, drink: 'Cappuccino',size: 'Large',  date: '18 Mar 2026' },
+  ]
+
+---
+
+Feat-007 | coffeeType Page
+----------------------------
+Create hafotty-coffi/src/website/pages/coffeeType/coffeeType.jsx and coffeeType.scss.
+Follow the same file/folder format as other pages in the pages folder.
+Render a single H1: "Coffee Types" centred on screen.
+Background: var(--blue-deep).
+H1 colour: var(--gold).
+This is a stub page — content comes in a future epic.
+Route: /coffee
+
+---
+
+Feat-008 | teaType Page
+-------------------------
+Create hafotty-coffi/src/website/pages/teaType/teaType.jsx and teaType.scss.
+Same format as coffeeType page (Feat-007).
+Render a single H1: "Tea Types" centred on screen.
+Background: var(--blue-deep).
+H1 colour: var(--teal).
+Route: /tea
+
+---
+
+Feat-009 | React Router Wiring
+--------------------------------
+Register all routes in the app entry point (App.jsx or equivalent router config).
+Routes to add:
+  /         → home.jsx
+  /coffee   → coffeeType.jsx
+  /tea      → teaType.jsx
+Ensure BrowserRouter (or existing router wrapper) wraps all routes.
+Import both new page components.
+
+---
+
+STOP AND TEST when all 9 features are marked done.
+Verify:
+  [ ] Home page renders centred on screen
+  [ ] Colours from tokens only — no hex in jsx/scss files
+  [ ] Coffee button navigates to /coffee, shows "Coffee Types" H1
+  [ ] Tea button navigates to /tea, shows "Tea Types" H1
+  [ ] Previous Orders button opens modal with 5 mock orders
+  [ ] Modal closes on backdrop click and × button
+  [ ] All button press animations work
