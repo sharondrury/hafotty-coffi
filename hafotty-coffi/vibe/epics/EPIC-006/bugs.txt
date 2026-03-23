@@ -1,0 +1,15 @@
+EPIC-006 — Bug Tracker
+=======================
+
+[No bugs logged yet.]
+
+---
+Bug entry template:
+  Title:
+  Repro steps:
+  Expected behaviour:
+  Actual behaviour:
+  Suspected cause:
+  Attempted fixes:
+  Final fix:
+  Status: not started | investigating | attempted | fixed | blocked

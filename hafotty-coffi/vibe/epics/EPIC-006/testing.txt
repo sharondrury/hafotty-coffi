@@ -1,0 +1,19 @@
+EPIC-006 — Testing
+===================
+
+[No test entries yet. Add an entry after each feature is implemented.]
+
+---
+Test entry template:
+  Feature name:
+  Manual test steps (written for a non-developer):
+    1.
+    2.
+    3.
+  Expected result per step:
+    1.
+    2.
+    3.
+  Automated tests completed:
+  Automated tests still needed:
+  Test status: not started | in progress | passed | failed | blocked

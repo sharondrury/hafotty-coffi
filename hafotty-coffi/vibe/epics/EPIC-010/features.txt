@@ -1,0 +1,15 @@
+EPIC-010 — Features
+===================
+
+[ ] Feature 1 — [feature name] — not started
+[ ] Feature 2 — [feature name] — not started
+[ ] Feature 3 — [feature name] — not started
+
+---
+Stop implementation and begin testing when:
+- All features above are marked "in progress" or "done"
+- Core happy-path behaviour is working end-to-end
+
+How to test at that point:
+- Follow the steps in testing.txt for each completed feature
+- Run: npm run lint && npm run build

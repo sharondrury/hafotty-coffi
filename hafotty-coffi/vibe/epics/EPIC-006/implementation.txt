@@ -1,0 +1,15 @@
+EPIC-006 — Implementation Log
+==============================
+
+[No entries yet. Add an entry after each feature is implemented.]
+
+---
+Entry template:
+  Feature name:
+  What was implemented:
+  Engine components considered: websiteContext / bars / button / modal / modalContext / slidePanel / toast / tooltip / makeDecision / rng / savewebsite / timer
+  Engine components used:
+  Engine components not used (reasons):
+  Files changed:
+  Tradeoffs / follow-up tasks:
+  Explanation (for learning):
