@@ -1,19 +1,131 @@
-EPIC-002 — Testing
-===================
-
-[No test entries yet. Add an entry after each feature is implemented.]
+EPIC-002 — Coffee Type Page + Basket: Testing
+===============================================
+Project: Hafotty Coffi
 
 ---
-Test entry template:
-  Feature name:
-  Manual test steps (written for a non-developer):
-    1.
-    2.
-    3.
-  Expected result per step:
-    1.
-    2.
-    3.
-  Automated tests completed:
-  Automated tests still needed:
-  Test status: not started | in progress | passed | failed | blocked
+
+Feat-001 | Coffee Data Array
+Test status: passed
+
+Manual test steps:
+  1. Navigate to /#/coffee.
+  2. Check that 10 coffee cards are visible on screen.
+  3. Each card should have an image, a name, and a short description.
+Expected result: All 10 coffees (Flat White, Latte, Cappuccino, Americano, Espresso,
+  Cortado, Caffe Mocha, Latte Macchiato, Iced Coffee, Iced Mocha) rendered with images.
+Automated tests completed: none.
+Automated tests still needed:
+  - Unit: COFFEES array has 10 entries.
+  - Unit: each entry has id, name, description, image fields.
+
+---
+
+Feat-002 | Basket Context
+Test status: passed (carried from EPIC-001 — no new tests required)
+
+---
+
+Feat-003 | Coffee Card Grid
+Test status: passed
+
+Manual test steps:
+  1. Navigate to /#/coffee.
+  2. Check cards are arranged in a responsive grid (multiple columns on wide screen).
+  3. Resize the browser — columns should reduce as width decreases.
+  4. On each card: check image loads, name is blue, description is dark text.
+  5. Check two circle buttons (minus and plus) and a quantity number are on each card.
+  6. Check the minus button is greyed out when quantity is 0.
+  7. Click plus on a card — quantity should increase to 1.
+  8. Click plus again — quantity should increase to 2.
+  9. Click minus — quantity should decrease to 1.
+  10. Click minus again — quantity reaches 0, item removed from basket.
+Expected result per step:
+  2. Grid layout with multiple columns.
+  6. Minus button reduced opacity, cannot be clicked.
+  7-10. Quantity number updates correctly at each step.
+Automated tests completed: none.
+Automated tests still needed:
+  - Unit: getQty returns 0 for item not in basket.
+  - Unit: clicking plus calls addToBasket with correct coffee object.
+  - Unit: clicking minus calls updateQuantity with id and qty minus 1.
+
+---
+
+Feat-004 | Quantity Badge on Card Image
+Test status: passed
+
+Manual test steps:
+  1. Navigate to /#/coffee.
+  2. Check no gold badge is visible on any card image initially.
+  3. Click plus on the Flat White card.
+  4. Check a gold badge showing "1" appears on the top-right of the Flat White image.
+  5. Click plus again — badge should update to "2".
+  6. Click minus until quantity reaches 0 — badge should disappear.
+Expected result: Badge appears and disappears correctly, always shows the right count.
+Automated tests completed: none.
+Automated tests still needed:
+  - Unit: badge not rendered when qty is 0.
+  - Unit: badge renders with correct number when qty is greater than 0.
+
+---
+
+Feat-005 | Page Header Bar
+Test status: passed
+
+Manual test steps:
+  1. Navigate to /#/coffee.
+  2. Check header at top: Back button left, "Coffees" title centre, Tea and Basket buttons right.
+  3. Click Back — should return to the previous page.
+  4. Click Tea — should navigate to /#/tea.
+  5. Click Basket with empty basket — should navigate to /#/basket, show empty state.
+  6. Go back to /#/coffee, add items to basket.
+  7. Check the Basket button in the header shows a red badge with the correct total.
+  8. Navigate away and back to /#/coffee — badge should still show the correct count.
+Expected result per step:
+  2. All three header sections visible and correctly positioned.
+  3. Browser navigates back one step.
+  4. Tea Types page loads.
+  5. Basket page loads, empty state message shown.
+  7. Red badge with correct item count shown next to "Basket".
+  8. Count persists across navigation.
+Automated tests completed: none.
+Automated tests still needed:
+  - Unit: Basket badge not rendered when basketCount is 0.
+  - Unit: Basket badge renders correct count when basketCount is greater than 0.
+
+---
+
+Feat-006 | Basket Page (minor update)
+Test status: passed
+
+Manual test steps:
+  1. Add a coffee from /#/coffee (e.g. Flat White).
+  2. Navigate to /#/basket.
+  3. Check the coffee item is listed with its name and quantity.
+  4. Check no "undefined" or broken text appears where size would be.
+  5. Use plus and minus controls — quantity should update live.
+  6. Click Remove — item should be removed instantly.
+  7. Remove all items — empty state message should appear.
+Expected result: Basket page displays coffee items cleanly with no missing or broken fields.
+Automated tests completed: none.
+Automated tests still needed:
+  - Unit: item without size field renders without broken text.
+
+---
+
+Feat-007 | Router Update
+Test status: passed (carried from EPIC-001 — no changes made)
+
+---
+
+Full regression checklist (EPIC-002 completion gate):
+  [ ] Navigate to /#/coffee — 10 cards render with images and descriptions
+  [ ] Plus adds item, gold badge appears on card image
+  [ ] Minus decrements quantity, minus button is disabled at 0
+  [ ] Basket button in header shows running count badge when items added
+  [ ] Basket icon (top-right, fixed) shows same count as header badge
+  [ ] Navigate to /#/basket — correct items and quantities shown
+  [ ] Adjust quantity on basket page — updates correctly
+  [ ] Navigate back to /#/coffee — card quantities still reflect basket state
+  [ ] Back button on coffeeType page returns to previous page
+  [ ] Tea button on coffeeType page navigates to /#/tea

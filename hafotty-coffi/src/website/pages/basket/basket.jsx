@@ -22,7 +22,7 @@ const Basket = () => {
                 <li key={item.id} className="basket-page__item">
                   <div className="basket-page__item-info">
                     <span className="basket-page__item-name">{item.name}</span>
-                    <span className="basket-page__item-size">{item.size}</span>
+                    {item.size && <span className="basket-page__item-size">{item.size}</span>}
                   </div>
                   <div className="basket-page__item-controls">
                     <button

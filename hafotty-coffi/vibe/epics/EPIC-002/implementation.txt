@@ -1,15 +1,131 @@
-EPIC-002 — Implementation Log
-==============================
-
-[No entries yet. Add an entry after each feature is implemented.]
+EPIC-002 — Coffee Type Page + Basket: Implementation Notes
+============================================================
+Project: Hafotty Coffi
+Status: [x] Done
 
 ---
-Entry template:
-  Feature name:
-  What was implemented:
-  Engine components considered: websiteContext / bars / button / modal / modalContext / slidePanel / toast / tooltip / makeDecision / rng / savewebsite / timer
-  Engine components used:
-  Engine components not used (reasons):
-  Files changed:
-  Tradeoffs / follow-up tasks:
-  Explanation (for learning):
+
+Feat-001 | Coffee Data Array
+------------------------------
+File:
+  hafotty-coffi/src/website/pages/coffeeType/coffeeType.jsx
+
+What was implemented:
+  Listed the actual contents of src/assets/scss/images/coffeeDrink/ before writing the array.
+  Found 10 images: caffe-mocha.png, iced-coffee.png, latte.png, iced-mocha.png,
+  latte-macciato.png, cappuccino.png, americano.png, espresso.png, flat-white.png, cortado.png
+
+  Each image imported at top of file as camelCase:
+    import caffeMochaImg from '../../../assets/scss/images/coffeeDrink/caffe-mocha.png'
+    import flatWhiteImg  from '../../../assets/scss/images/coffeeDrink/flat-white.png'
+    etc.
+
+  COFFEES array defined above the component with 10 entries, each:
+    { id, name, description, image }
+  image field references the imported variable (not a raw path string) so Vite
+  handles hashing and asset pipeline correctly.
+
+Engine components considered: none applicable to data array.
+
+---
+
+Feat-002 | Basket Context
+--------------------------
+Not re-implemented. Already exists from EPIC-001.
+Location: src/website/components/basket/basketContext.jsx + useBasket.js
+Existing API used as-is:
+  - basket (array)      → equivalent to items in this spec
+  - addToBasket(item)   → equivalent to addItem
+  - updateQuantity(id, qty) → used for decrement (handles removal when qty reaches 0)
+  - basketCount         → equivalent to totalCount
+coffeeType.jsx imports useBasket from '../../components/basket/useBasket'.
+
+Note: spec described this context at src/context/basketContext.jsx but the EPIC-001
+decision was to place it in src/website/components/basket/. No duplication created.
+
+---
+
+Feat-003 | Coffee Card Grid
+-----------------------------
+Files changed:
+  hafotty-coffi/src/website/pages/coffeeType/coffeeType.jsx
+  hafotty-coffi/src/website/pages/coffeeType/coffeeType.scss
+
+What was implemented:
+  CSS Grid with auto-fill columns (minmax 14rem), gap 1.5rem, max-width 79.375rem.
+  Each .coffee-card: white background, border-radius 0.75rem, overflow hidden,
+  box-shadow, flex column layout so controls pin to the bottom of the card.
+
+  getQty helper defined in component:
+    const getQty = (id) => basket.find(i => i.id === id)?.quantity ?? 0
+
+  Plus button calls addToBasket(coffee) — adds item or increments quantity.
+  Minus button calls updateQuantity(coffee.id, qty - 1) — decrements; removes at 0.
+  Minus button has disabled attribute when qty === 0 (opacity 0.4, pointer-events none).
+
+Engine components considered:
+  - button.jsx: not used — card buttons need tight layout and custom shape (circle).
+    Custom .coffee-card__btn class used instead.
+
+---
+
+Feat-004 | Quantity Badge
+--------------------------
+Files changed:
+  hafotty-coffi/src/website/pages/coffeeType/coffeeType.jsx
+  hafotty-coffi/src/website/pages/coffeeType/coffeeType.scss
+
+What was implemented:
+  Conditional render of .coffee-card__badge inside .coffee-card__img-wrap.
+  Badge is gold circle, absolutely positioned top-right of the image.
+  Only rendered when qty > 0 — disappears when item removed from basket.
+  pointer-events: none so it does not intercept clicks on the image area.
+
+---
+
+Feat-005 | Page Header Bar
+----------------------------
+Files changed:
+  hafotty-coffi/src/website/pages/coffeeType/coffeeType.jsx
+  hafotty-coffi/src/website/pages/coffeeType/coffeeType.scss
+
+What was implemented:
+  Header row: flex, space-between. Three sections: back button, title, nav group.
+  Back button: ghost style (white border/text), calls navigate(-1) from useNavigate.
+  Title: "Coffees" in gold at 1.75rem.
+  Nav group: Tea link (teal) and Basket link (gold).
+  Basket link shows a red count badge when basketCount > 0.
+  Both nav links use React Router <Link> for native navigation.
+
+Engine components considered: none applicable.
+
+---
+
+Feat-006 | Basket Page
+------------------------
+Not re-implemented. Already exists with full functionality from EPIC-001.
+Minor update applied: item.size is now conditionally rendered (only shown when present)
+so coffee items (which have no size) display cleanly.
+File changed: hafotty-coffi/src/website/pages/basket/basket.jsx
+
+---
+
+Feat-007 | Router Update
+--------------------------
+Not re-implemented. Already completed in EPIC-001.
+Routes /coffee and /basket are registered in routes.jsx.
+BasketProvider wraps the app in App.jsx.
+No changes needed.
+
+---
+
+Tradeoffs and follow-up tasks:
+  - teaType page is still a stub — EPIC-003 should mirror this epic's pattern for tea.
+  - No size selection on coffee cards — if sizes are needed, add a size selector per
+    card in a future epic and update the basket item shape accordingly.
+  - Basket items from coffeeType include the image field — basket page could show
+    thumbnails in a future epic using item.image.
+  - EPIC-002 spec proposed a separate src/context/ folder for the basket context.
+    The EPIC-001 location (src/website/components/basket/) was kept to avoid duplication.
+    If a wider WebsiteContext is needed across future epics, consider promoting to
+    src/website/state/ at that point.
