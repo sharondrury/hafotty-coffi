@@ -4,6 +4,7 @@ const BasketContext = createContext(null)
 
 const BasketProvider = ({ children }) => {
   const [basket, setBasket] = useState([])
+  const [milkChoice, setMilkChoice] = useState(null)
 
   const addToBasket = (item) => {
     setBasket(prev => {
@@ -34,7 +35,7 @@ const BasketProvider = ({ children }) => {
   const basketCount = basket.reduce((sum, item) => sum + item.quantity, 0)
 
   return (
-    <BasketContext.Provider value={{ basket, addToBasket, removeFromBasket, updateQuantity, basketCount }}>
+    <BasketContext.Provider value={{ basket, addToBasket, removeFromBasket, updateQuantity, basketCount, milkChoice, setMilkChoice }}>
       {children}
     </BasketContext.Provider>
   )

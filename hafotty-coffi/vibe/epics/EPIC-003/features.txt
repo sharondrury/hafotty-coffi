@@ -1,15 +1,102 @@
-EPIC-003 — Features
-===================
-
-[ ] Feature 1 — [feature name] — not started
-[ ] Feature 2 — [feature name] — not started
-[ ] Feature 3 — [feature name] — not started
+EPIC-003 — Tea Type Page
+========================
+Project: Hafotty Coffi
+Primary file: hafotty-coffi/src/website/pages/teaType/teaType.jsx
+Images: hafotty-coffi/src/assets/scss/images/teaDrink/
 
 ---
-Stop implementation and begin testing when:
-- All features above are marked "in progress" or "done"
-- Core happy-path behaviour is working end-to-end
 
-How to test at that point:
-- Follow the steps in testing.txt for each completed feature
-- Run: npm run lint && npm run build
+Feat-001 | Tea Data Array                                             [done]
+------------------------------
+Define a TEAS data array inside teaType.jsx (above the component).
+Each tea object contains:
+  { id, name, description, image }
+Images imported as ES modules at the top of the file — Vite handles asset hashing.
+Populate using actual filenames from the teaDrink folder.
+
+7 images found:
+  mint-tea.png, english-breakfast-tea.png, earl-grey-tea.png, matcha.png,
+  chai-latte.png, peach-iced-tea.png, iced-chai-latte.png
+
+---
+
+Feat-002 | Tea Card Grid                                              [done]
+----------------------------
+Render a responsive grid of tea cards — same layout and structure as coffeeType.
+Grid: CSS Grid, repeat(auto-fill, minmax(14rem, 1fr)), gap 1.5rem,
+  max-width 79.375rem, centred, padding 2rem 1.5rem.
+
+Each .tea-card:
+  - Background: var(--white), border-radius 0.75rem, overflow hidden
+  - Box-shadow: 0 2px 8px rgba(0,0,0,0.15), display flex flex-direction column
+Card image: width 100%, aspect-ratio 4/3, object-fit cover.
+Card body: name as H3 (var(--blue-deep)), description as p (var(--text-dark)).
+Controls: minus button, quantity number, plus button — same as coffee cards.
+  - Minus disabled at qty 0
+  - Plus: addToBasket(tea)
+  - Minus: updateQuantity(tea.id, qty - 1)
+
+---
+
+Feat-003 | Quantity Badge on Card Image                               [done]
+-----------------------------------------
+Same pattern as coffeeType — Feat-004 in EPIC-002.
+.tea-card__badge: gold circle, absolute top-right of image.
+Only renders when qty > 0.
+
+---
+
+Feat-004 | Page Header Bar                                            [done]
+----------------------------
+Top bar matching coffeeType header structure.
+Left: Back button (← Back) — ghost style white border — navigate(-1).
+Centre: "Teas" — h1, colour var(--teal), font-size 1.75rem.
+Right: two nav buttons:
+  Coffee button — background var(--red), colour var(--white) — routes to /coffee.
+  Basket button — background var(--gold), colour var(--black) — routes to /basket.
+    Shows red count badge when basketCount > 0.
+
+---
+
+Feat-005 | Milk Selection Section                                     [done]
+------------------------------
+A section below the tea grid allowing the user to choose their milk preference.
+Heading: "Choose your milk" — var(--white), centred.
+Three options rendered as toggle buttons:
+  - Semi-Skimmed
+  - Full Fat
+  - Plant-Based
+Only one can be selected at a time (single select).
+Selected state: background var(--teal), colour var(--black), no border.
+Unselected state: background none, border 2px solid var(--teal), colour var(--white).
+Clicking a selected option again deselects it (toggle to null).
+Milk choice stored in basket context (milkChoice, setMilkChoice) — see Feat-006.
+
+---
+
+Feat-006 | Basket Context — Milk Choice State                         [done]
+----------------------------------------------
+Update src/website/components/basket/basketContext.jsx.
+Add:
+  const [milkChoice, setMilkChoice] = useState(null)
+Expose via Provider value: milkChoice, setMilkChoice.
+milkChoice is a string (e.g. 'semi-skimmed') or null (none selected).
+Basket page reads milkChoice and displays it when a choice is set.
+
+---
+
+STOP AND TEST when all 6 features are marked done.
+Verify:
+  [ ] Tea grid renders with all 7 images and names
+  [ ] Plus adds tea to basket, gold badge appears on card image
+  [ ] Minus decrements, disabled at 0
+  [ ] Basket button in header shows running count badge
+  [ ] Back button returns to previous page
+  [ ] Coffee button navigates to /coffee
+  [ ] Milk section visible below the grid
+  [ ] Selecting a milk option highlights it in teal
+  [ ] Selecting another option switches the selection
+  [ ] Clicking selected option deselects it
+  [ ] Navigating away and back preserves milk choice (in context)
+  [ ] Basket page shows milk choice when set
+  [ ] Basket state persists across page navigation

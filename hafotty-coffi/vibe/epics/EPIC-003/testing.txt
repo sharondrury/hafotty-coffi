@@ -1,19 +1,152 @@
-EPIC-003 — Testing
-===================
-
-[No test entries yet. Add an entry after each feature is implemented.]
+EPIC-003 — Tea Type Page: Testing
+===================================
+Project: Hafotty Coffi
 
 ---
-Test entry template:
-  Feature name:
-  Manual test steps (written for a non-developer):
-    1.
-    2.
-    3.
-  Expected result per step:
-    1.
-    2.
-    3.
-  Automated tests completed:
-  Automated tests still needed:
-  Test status: not started | in progress | passed | failed | blocked
+
+Feat-001 | Tea Data Array
+Test status: passed
+
+Manual test steps:
+  1. Navigate to /#/tea.
+  2. Check that 7 tea cards are visible on screen.
+  3. Each card should show an image, a name, and a short description.
+Expected result: All 7 teas render — English Breakfast, Earl Grey, Matcha, Chai Latte,
+  Mint Tea, Peach Iced Tea, Iced Chai Latte — each with its own image.
+Automated tests completed: none.
+Automated tests still needed:
+  - Unit: TEAS array has 7 entries, each with id, name, description, image.
+
+---
+
+Feat-002 | Tea Card Grid
+Test status: passed
+
+Manual test steps:
+  1. Navigate to /#/tea.
+  2. Check cards are arranged in a multi-column responsive grid.
+  3. Resize the browser — columns should reduce as width decreases.
+  4. On each card: image loads, name is blue, description is dark text.
+  5. Two circular buttons (minus and plus) and a quantity number appear on each card.
+  6. Minus button is greyed out when quantity is 0.
+  7. Click plus on a card — quantity increases to 1.
+  8. Click plus again — quantity increases to 2.
+  9. Click minus — quantity decreases to 1.
+  10. Click minus again — quantity reaches 0, item removed from basket.
+Expected result per step:
+  2. Grid layout, not a single-column list.
+  6. Minus has reduced opacity, cannot be clicked.
+  7-10. Quantity updates correctly at each step.
+Automated tests completed: none.
+Automated tests still needed:
+  - Unit: getQty returns 0 for item not in basket.
+  - Unit: plus calls addToBasket with correct tea object.
+  - Unit: minus calls updateQuantity with id and qty minus 1.
+
+---
+
+Feat-003 | Quantity Badge on Card Image
+Test status: passed
+
+Manual test steps:
+  1. Navigate to /#/tea.
+  2. Check no gold badge visible on any card initially.
+  3. Click plus on Earl Grey — gold badge showing "1" appears on its image.
+  4. Click plus again — badge updates to "2".
+  5. Click minus until quantity reaches 0 — badge disappears.
+Expected result: Badge appears, updates, and disappears correctly.
+Automated tests completed: none.
+Automated tests still needed:
+  - Unit: badge not rendered when qty is 0.
+  - Unit: badge renders correct number when qty is greater than 0.
+
+---
+
+Feat-004 | Page Header Bar
+Test status: passed
+
+Manual test steps:
+  1. Navigate to /#/tea.
+  2. Check header shows: Back button (left), "Teas" title in teal (centre), Coffee and Basket buttons (right).
+  3. Click Back — returns to previous page.
+  4. Click Coffee — navigates to /#/coffee.
+  5. From /#/coffee, navigate to /#/tea. Add tea to basket.
+  6. Basket button in header should show a red badge with the correct total.
+  7. Navigate away and back to /#/tea — badge still shows correct count.
+Expected result per step:
+  2. All header elements visible and correctly positioned.
+  3. Browser navigates back one step.
+  4. Coffee Types page loads.
+  6. Red badge with correct item count shown.
+  7. Count persists across navigation.
+Automated tests completed: none.
+Automated tests still needed:
+  - Unit: Basket badge not rendered when basketCount is 0.
+  - Unit: Basket badge shows correct count when basketCount is greater than 0.
+
+---
+
+Feat-005 | Milk Selection Section
+Test status: passed
+
+Manual test steps:
+  1. Navigate to /#/tea and scroll to the bottom of the page.
+  2. Check "Choose your milk" heading is visible below the card grid.
+  3. Check three buttons: Semi-Skimmed, Full Fat, Plant-Based.
+  4. All three buttons start unselected (transparent with teal border).
+  5. Click Semi-Skimmed — it should fill teal and appear selected.
+  6. Click Full Fat — Full Fat becomes selected, Semi-Skimmed returns to unselected.
+  7. Click Full Fat again — it deselects (returns to unselected state, no milk chosen).
+  8. Navigate to /#/basket and back to /#/tea — milk selection should be preserved.
+Expected result per step:
+  3. All three milk buttons visible in a row.
+  4. Transparent buttons with teal border.
+  5. Semi-Skimmed fills teal.
+  6. Selection switches to Full Fat.
+  7. All buttons return to unselected.
+  8. Previous selection still shown after navigation.
+Automated tests completed: none.
+Automated tests still needed:
+  - Unit: handleMilkSelect sets milkChoice to the id when unselected.
+  - Unit: handleMilkSelect sets milkChoice to null when clicking the already-selected option.
+  - Unit: only one milk button has the active class at a time.
+
+---
+
+Feat-006 | Basket Context — Milk Choice State
+Test status: passed
+
+Manual test steps:
+  1. Navigate to /#/tea.
+  2. Select "Plant-Based" milk.
+  3. Navigate to /#/basket.
+  4. Check a teal-bordered row shows "Milk: Plant-Based".
+  5. Go back to /#/tea, change selection to "Full Fat".
+  6. Return to /#/basket — row should now show "Milk: Full Fat".
+  7. Go back to /#/tea, click Full Fat again to deselect.
+  8. Return to /#/basket — milk row should no longer be visible.
+Expected result per step:
+  4. "Milk: Plant-Based" row visible with teal styling.
+  6. Row updates to "Milk: Full Fat".
+  8. No milk row shown when no selection made.
+Automated tests completed: none.
+Automated tests still needed:
+  - Unit: milk row not rendered when milkChoice is null.
+  - Unit: milk row renders correct label when milkChoice is set.
+
+---
+
+Full regression checklist (EPIC-003 completion gate):
+  [ ] Navigate to /#/tea — 7 cards render with images and descriptions
+  [ ] Plus adds tea, gold badge appears on card image
+  [ ] Minus decrements, disabled at 0
+  [ ] Basket button in header shows running count badge
+  [ ] Basket icon (top-right fixed) shows the same count
+  [ ] Back button returns to previous page
+  [ ] Coffee button navigates to /#/coffee
+  [ ] Milk section visible below the grid
+  [ ] Selecting milk highlights in teal, deselects on second click
+  [ ] Switching milk options moves the selection
+  [ ] Navigate away and back — milk selection preserved
+  [ ] Navigate to /#/basket — milk choice displayed in teal row
+  [ ] Add both coffee and tea items — basket shows all items correctly

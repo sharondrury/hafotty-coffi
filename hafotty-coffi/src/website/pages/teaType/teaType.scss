@@ -2,14 +2,249 @@
 
 .tea-type {
   min-height: 100vh;
+  background: var(--blue-deep);
+  padding-bottom: 4rem;
+}
+
+// ── Header bar ──────────────────────────────────────────────────────────────
+
+.tea-type__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 1.5rem 0;
+  max-width: 79.375rem;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.tea-type__back {
+  background: none;
+  border: 1px solid var(--white);
+  color: var(--white);
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+
+  &:hover {
+    background: var(--white);
+    color: var(--blue-deep);
+  }
+}
+
+.tea-type__title {
+  color: var(--teal);
+  font-size: 1.75rem;
+  font-weight: 700;
+}
+
+.tea-type__nav {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.tea-type__nav-btn {
+  padding: 0.5rem 1.25rem;
+  border-radius: 0.375rem;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.875rem;
+  display: inline-flex;
+  align-items: center;
+  transition: filter 0.15s ease;
+
+  &:hover {
+    filter: brightness(0.9);
+  }
+
+  &--coffee {
+    background: var(--red);
+    color: var(--white);
+  }
+
+  &--basket {
+    background: var(--gold);
+    color: var(--black);
+    position: relative;
+  }
+}
+
+.tea-type__basket-badge {
+  background: var(--red);
+  color: var(--white);
+  border-radius: 50%;
+  width: 1.25rem;
+  height: 1.25rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 0.375rem;
+}
+
+// ── Card grid ────────────────────────────────────────────────────────────────
+
+.tea-type__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
+  gap: 1.5rem;
+  max-width: 79.375rem;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+}
+
+// ── Individual card ──────────────────────────────────────────────────────────
+
+.tea-card {
+  background: var(--white);
+  border-radius: 0.75rem;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+}
+
+.tea-card__img-wrap {
+  position: relative;
+}
+
+.tea-card__img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  display: block;
+}
+
+.tea-card__badge {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background: var(--gold);
+  color: var(--black);
+  border-radius: 50%;
+  width: 1.75rem;
+  height: 1.75rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--blue-deep);
+  font-size: 0.875rem;
+  font-weight: 700;
+  pointer-events: none;
+}
 
-  h1 {
-    color: var(--teal);
-    font-size: 2.5rem;
-    text-align: center;
+.tea-card__body {
+  padding: 1rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.tea-card__name {
+  color: var(--blue-deep);
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.tea-card__desc {
+  color: var(--text-dark);
+  font-size: 0.8125rem;
+  margin-top: 0.25rem;
+  flex: 1;
+}
+
+.tea-card__controls {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: auto;
+  padding-top: 0.75rem;
+}
+
+.tea-card__btn {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  border: none;
+  background: var(--teal);
+  color: var(--black);
+  font-size: 1.25rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: filter 0.15s ease;
+  line-height: 1;
+
+  &:hover:not(:disabled) {
+    filter: brightness(0.85);
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    pointer-events: none;
+  }
+}
+
+.tea-card__qty {
+  min-width: 2rem;
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--blue-deep);
+}
+
+// ── Milk selection ───────────────────────────────────────────────────────────
+
+.tea-type__milk {
+  max-width: 79.375rem;
+  margin: 0 auto;
+  padding: 0 1.5rem 2rem;
+  text-align: center;
+}
+
+.tea-type__milk-heading {
+  color: var(--white);
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.tea-type__milk-options {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.tea-type__milk-btn {
+  padding: 0.625rem 1.5rem;
+  border-radius: 2rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 2px solid var(--teal);
+  background: none;
+  color: var(--white);
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+
+  &:hover {
+    background: rgba(3, 206, 164, 0.15);
+  }
+
+  &--active {
+    background: var(--teal);
+    color: var(--black);
+    border-color: var(--teal);
+
+    &:hover {
+      background: var(--teal);
+      filter: brightness(0.9);
+    }
   }
 }

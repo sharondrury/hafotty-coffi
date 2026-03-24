@@ -1,15 +1,159 @@
-EPIC-003 — Implementation Log
-==============================
-
-[No entries yet. Add an entry after each feature is implemented.]
+EPIC-003 — Tea Type Page: Implementation Notes
+===============================================
+Project: Hafotty Coffi
+Status: [x] Done
 
 ---
-Entry template:
-  Feature name:
-  What was implemented:
-  Engine components considered: websiteContext / bars / button / modal / modalContext / slidePanel / toast / tooltip / makeDecision / rng / savewebsite / timer
-  Engine components used:
-  Engine components not used (reasons):
-  Files changed:
-  Tradeoffs / follow-up tasks:
-  Explanation (for learning):
+
+Feat-001 | Tea Data Array
+---------------------------
+File:
+  hafotty-coffi/src/website/pages/teaType/teaType.jsx
+
+What was implemented:
+  Listed actual contents of src/assets/scss/images/teaDrink/ before writing the array.
+  Found 7 images: mint-tea.png, english-breakfast-tea.png, earl-grey-tea.png, matcha.png,
+  chai-latte.png, peach-iced-tea.png, iced-chai-latte.png
+
+  Each imported as a camelCase ES module variable:
+    import englishBreakfastImg from '../../../assets/scss/images/teaDrink/english-breakfast-tea.png'
+    import mintTeaImg          from '../../../assets/scss/images/teaDrink/mint-tea.png'
+    etc.
+
+  TEAS array defined above the component — same shape as COFFEES in EPIC-002:
+    { id, name, description, image }
+
+Engine components considered: none applicable to data array.
+
+Explanation:
+  ES module imports let Vite hash the filenames at build time, so the browser
+  always gets the latest version and never serves a stale cached image.
+
+---
+
+Feat-002 | Tea Card Grid
+--------------------------
+Files changed:
+  hafotty-coffi/src/website/pages/teaType/teaType.jsx
+  hafotty-coffi/src/website/pages/teaType/teaType.scss
+
+What was implemented:
+  CSS Grid with auto-fill columns (minmax 14rem), gap 1.5rem — exact same layout as coffeeType.
+  .tea-card classes mirror .coffee-card structure and styles.
+  Card body uses flex column so controls always pin to card bottom (margin-top: auto).
+  getQty helper reads from basket context: basket.find(i => i.id === id)?.quantity ?? 0
+  Plus button: addToBasket(tea)
+  Minus button: updateQuantity(tea.id, qty - 1) — handles removal when qty reaches 0.
+  Minus button disabled when qty === 0 (opacity 0.4, pointer-events none).
+
+  Tea card buttons use var(--teal) background instead of var(--red) to match tea theme.
+
+Engine components considered:
+  - button.jsx: not used — card buttons need circular shape and tight layout.
+
+Explanation:
+  .tea-card classes are a deliberate mirror of .coffee-card rather than shared classes,
+  keeping each page self-contained and easy to style independently. If a third product
+  page is added, extract shared card styles to a SCSS mixin at that point.
+
+---
+
+Feat-003 | Quantity Badge on Card Image
+-----------------------------------------
+Files changed:
+  hafotty-coffi/src/website/pages/teaType/teaType.jsx
+  hafotty-coffi/src/website/pages/teaType/teaType.scss
+
+What was implemented:
+  Same conditional badge pattern as coffeeType (EPIC-002 Feat-004).
+  .tea-card__badge: gold circle, absolute top-right, renders only when qty > 0.
+  pointer-events: none so badge never intercepts card clicks.
+
+Engine components considered: none applicable.
+
+---
+
+Feat-004 | Page Header Bar
+----------------------------
+Files changed:
+  hafotty-coffi/src/website/pages/teaType/teaType.jsx
+  hafotty-coffi/src/website/pages/teaType/teaType.scss
+
+What was implemented:
+  Header mirrors coffeeType header layout exactly — flex, space-between.
+  Back button: ghost style (white border/text), navigate(-1).
+  Title: "Teas" in var(--teal) at 1.75rem.
+  Nav group: Coffee link (var(--red)) and Basket link (var(--gold) with red count badge).
+  Both nav links use React Router <Link>.
+
+Engine components considered: none applicable.
+
+Explanation:
+  The header navigation pattern is consistent across coffeeType and teaType —
+  each page shows the "other drink" link plus the basket, making it easy to switch
+  between drink types without going back to home.
+
+---
+
+Feat-005 | Milk Selection Section
+------------------------------------
+Files changed:
+  hafotty-coffi/src/website/pages/teaType/teaType.jsx
+  hafotty-coffi/src/website/pages/teaType/teaType.scss
+
+What was implemented:
+  Section rendered below the tea grid.
+  MILKS array defined above the component:
+    [{ id: 'semi-skimmed', label: 'Semi-Skimmed' },
+     { id: 'full-fat',     label: 'Full Fat' },
+     { id: 'plant-based',  label: 'Plant-Based' }]
+  Three toggle buttons, single-select behaviour.
+  handleMilkSelect toggles: if same id clicked again, sets milkChoice to null (deselects).
+  Active class applied via template literal: tea-type__milk-btn--active when id matches milkChoice.
+  Unselected: transparent background, teal border, white text.
+  Selected: teal background, black text.
+
+Engine components considered: none applicable to toggle buttons.
+
+Explanation:
+  The toggle pattern (setMilkChoice(milkChoice === id ? null : id)) is a common
+  single-select toggle — clicking the active option deselects it. This is explicit
+  and traceable with no hidden magic.
+
+---
+
+Feat-006 | Basket Context — Milk Choice State
+-----------------------------------------------
+Files changed:
+  hafotty-coffi/src/website/components/basket/basketContext.jsx
+  hafotty-coffi/src/website/pages/basket/basket.jsx
+  hafotty-coffi/src/website/pages/basket/basket.scss
+
+What was implemented:
+  Added const [milkChoice, setMilkChoice] = useState(null) to BasketProvider.
+  Exposed milkChoice and setMilkChoice via context value.
+  milkChoice persists across all page navigation (in-memory, same session).
+
+  Basket page reads milkChoice from useBasket().
+  Displays a teal-bordered row "Milk: <choice>" when milkChoice is set.
+  Label is formatted using .replace() to convert 'semi-skimmed' → 'Semi-Skimmed' etc.
+
+Engine components considered:
+  - websiteContext: this is the pattern rules.txt describes for saving vital state.
+    Milk choice is vital to the order, so it is saved in context rather than local state.
+
+Explanation:
+  milkChoice lives in context rather than teaType component state so that:
+  1. The basket page can read it without prop drilling.
+  2. Navigating away from teaType and back preserves the user's milk selection.
+
+---
+
+Tradeoffs and follow-up tasks:
+  - milkChoice is global and shared — if coffee drinks also need a milk choice in future,
+    consider making milkChoice per-drink-type or per-item rather than a single value.
+  - .tea-card styles mirror .coffee-card — extract to a shared SCSS mixin if a third
+    product type is added.
+  - Milk choice label formatting is done inline with .replace(). If more complex
+    formatting is needed (e.g. icons per milk type), extract to a utility.
+  - No milk images or icons — could be added in a future epic.

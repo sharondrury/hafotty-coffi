@@ -3,7 +3,7 @@ import useBasket from '../../components/basket/useBasket'
 import './basket.scss'
 
 const Basket = () => {
-  const { basket, removeFromBasket, updateQuantity, basketCount } = useBasket()
+  const { basket, removeFromBasket, updateQuantity, basketCount, milkChoice } = useBasket()
 
   return (
     <div className="basket-page">
@@ -44,6 +44,13 @@ const Basket = () => {
                 </li>
               ))}
             </ul>
+
+            {milkChoice && (
+              <div className="basket-page__milk">
+                <span className="basket-page__milk-label">Milk:</span>
+                <span className="basket-page__milk-value">{milkChoice.replace('-', ' ').replace(/\b\w/g, c => c.toUpperCase())}</span>
+              </div>
+            )}
 
             <div className="basket-page__footer">
               <p className="basket-page__total">Total items: <strong>{basketCount}</strong></p>
