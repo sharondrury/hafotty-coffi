@@ -19,7 +19,10 @@ const SendOrder = ({ items, onSuccess, onError }) => {
     setSending(true)
 
     const formattedOrderString = items
-      .map(i => `${i.name} x${i.quantity}`)
+      .map(i => {
+        const milkSuffix = i.milkChoice ? ` (${i.milkChoice} milk)` : ''
+        return `${i.name} x${i.quantity}${milkSuffix}`
+      })
       .join('\n')
 
     emailjs

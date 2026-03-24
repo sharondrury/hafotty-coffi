@@ -5,7 +5,7 @@ import SendOrder from '../../components/sendOrder/sendOrder'
 import './basket.scss'
 
 const Basket = () => {
-  const { basket, removeFromBasket, updateQuantity, clearBasket, basketCount, milkChoice } = useBasket()
+  const { basket, removeFromBasket, updateQuantity, clearBasket, basketCount } = useBasket()
   const [orderStatus, setOrderStatus] = useState('idle')
 
   useEffect(() => {
@@ -47,40 +47,34 @@ const Basket = () => {
           <>
             <ul className="basket-page__list">
               {basket.map(item => (
-                <li key={item.id} className="basket-page__item">
+                <li key={item.basketId} className="basket-page__item">
                   <div className="basket-page__item-info">
                     <span className="basket-page__item-name">{item.name}</span>
+                    {item.milkChoice && (
+                      <span className="basket-page__item-milk">{item.milkChoice} milk</span>
+                    )}
                     {item.size && <span className="basket-page__item-size">{item.size}</span>}
                   </div>
                   <div className="basket-page__item-controls">
                     <button
                       className="basket-page__qty-btn"
-                      onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                      onClick={() => updateQuantity(item.basketId, item.quantity - 1)}
                       aria-label="Decrease quantity"
                     >−</button>
                     <span className="basket-page__qty">{item.quantity}</span>
                     <button
                       className="basket-page__qty-btn"
-                      onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                      onClick={() => updateQuantity(item.basketId, item.quantity + 1)}
                       aria-label="Increase quantity"
                     >+</button>
                     <button
                       className="basket-page__remove"
-                      onClick={() => removeFromBasket(item.id)}
+                      onClick={() => removeFromBasket(item.basketId)}
                     >Remove</button>
                   </div>
                 </li>
               ))}
             </ul>
-
-            {milkChoice && (
-              <div className="basket-page__milk">
-                <span className="basket-page__milk-label">Milk:</span>
-                <span className="basket-page__milk-value">
-                  {milkChoice.replace('-', ' ').replace(/\b\w/g, c => c.toUpperCase())}
-                </span>
-              </div>
-            )}
 
             <div className="basket-page__footer">
               <p className="basket-page__total">Total items: <strong>{basketCount}</strong></p>

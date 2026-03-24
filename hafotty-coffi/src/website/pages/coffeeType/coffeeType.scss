@@ -157,6 +157,36 @@
   flex: 1;
 }
 
+.coffee-card__milk-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+  margin-top: 0.625rem;
+}
+
+.coffee-card__milk-pill {
+  padding: 0.25rem 0.625rem;
+  border-radius: 1rem;
+  border: 1px solid var(--blue-deep);
+  background: none;
+  color: var(--blue-deep);
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+
+  &:hover {
+    background: var(--blue-deep);
+    color: var(--white);
+  }
+
+  &--active {
+    background: var(--gold);
+    border-color: var(--gold);
+    color: var(--black);
+  }
+}
+
 .coffee-card__controls {
   display: flex;
   align-items: center;

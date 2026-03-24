@@ -62,8 +62,14 @@
   font-size: 1rem;
 }
 
+.basket-page__item-milk {
+  color: var(--teal);
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
 .basket-page__item-size {
-  color: #666;
+  color: var(--text-dark);
   font-size: 0.85rem;
 }
 

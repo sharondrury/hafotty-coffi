@@ -14,12 +14,9 @@ Each coffee object contains:
     id: 'flat-white',           // unique slug, kebab-case
     name: 'Flat White',         // display name
     description: 'Short one-line descriptor',
-    image: '/assets/images/coffeeDrink/<filename>.jpg',  // path relative to public or imported
+    image: importedVariable,    // ES module import — Vite handles asset pipeline
   }
 Populate with as many entries as there are images in the coffeeDrink folder.
-Images should be imported at the top of coffeeType.jsx using ES module imports
-(e.g. import flatWhiteImg from '../../assets/scss/images/coffeeDrink/flatWhite.jpg')
-so Vite handles the asset pipeline correctly.
 
 10 images found and used:
   caffe-mocha.png, iced-coffee.png, latte.png, iced-mocha.png, latte-macciato.png,
@@ -27,110 +24,111 @@ so Vite handles the asset pipeline correctly.
 
 ---
 
-Feat-002 | Basket Context (Global State)                              [done — carried from EPIC-001]
------------------------------------------
-Already implemented in EPIC-001.
-Location: src/website/components/basket/basketContext.jsx + useBasket.js
-API: { basket, addToBasket, removeFromBasket, updateQuantity, basketCount }
-Note: API names differ slightly from this spec (basket vs items, basketCount vs totalCount)
-but functionality is equivalent. coffeeType.jsx uses the existing API directly.
+Feat-002 | Basket Context — Per-Item Milk Choice                     [done]
+---------------------------------------------------
+File: hafotty-coffi/src/website/components/basket/basketContext.jsx
+
+New actions added alongside existing ones:
+  addItem(item, milkChoice = 'Full Fat')
+    — Adds item or increments quantity; stores milkChoice on the basket entry.
+  updateMilkChoice(id, milkChoice)
+    — Updates milkChoice on an existing basket item by id.
+
+Each basket item shape (coffee):
+  { id, name, description, image, quantity, milkChoice }
+
+Existing addToBasket / updateQuantity / removeFromBasket / clearBasket / basketCount
+retained unchanged for backward compatibility with teaType and basket pages.
+
+Global milkChoice / setMilkChoice retained for tea's global milk selection.
 
 ---
 
-Feat-003 | Coffee Card Grid                                           [done]
+Feat-003 | CoffeeCard Sub-Component with Milk Pills                  [done]
+------------------------------------------------------------
+File: hafotty-coffi/src/website/pages/coffeeType/coffeeType.jsx
+
+CoffeeCard extracted as a named function component (not exported).
+Local state: const [localMilk, setLocalMilk] = useState(basketItem?.milkChoice ?? 'Full Fat')
+  — initialises from basket if item already added, otherwise defaults to Full Fat.
+
+Milk options (5 pills):
+  Full Fat | Skimmed | Oat | Soy | None
+
+Pill behaviour:
+  - Selected pill highlighted gold (.coffee-card__milk-pill--active).
+  - Selecting a pill updates localMilk state.
+  - If item is already in basket (qty > 0), also calls updateMilkChoice to sync.
+  - + button calls addItem(coffee, localMilk) instead of addToBasket.
+  - − button calls updateQuantity(coffee.id, qty - 1) as before.
+
+CoffeeType parent component now only handles the header bar and grid layout.
+It reads basketCount from useBasket for the nav badge.
+
+---
+
+Feat-004 | Coffee Card Grid                                           [done]
 -----------------------------
-In coffeeType.jsx, render a responsive grid of coffee cards.
-Grid layout:
-  - CSS Grid, repeat(auto-fill, minmax(14rem, 1fr)), gap 1.5rem
-  - Max-width 79.375rem (1270px), centred, padding 2rem 1.5rem
+CSS Grid: repeat(auto-fill, minmax(14rem, 1fr)), gap 1.5rem,
+max-width 79.375rem, centred, padding 2rem 1.5rem.
 
-Each card (.coffee-card):
-  - Background: var(--white)
-  - Border-radius: 0.75rem
-  - Overflow: hidden
-  - Box-shadow: 0 2px 8px rgba(0,0,0,0.15)
-  - Display: flex, flex-direction: column
-
-Card image area (.coffee-card__img-wrap):
-  - Position: relative (to anchor the quantity badge)
-  - Image fills full width, aspect-ratio 4/3, object-fit cover
-
-Card body (.coffee-card__body):
-  - Padding: 1rem
-  - Coffee name as H3: colour var(--blue-deep), font-size 1rem, font-weight 700
-  - Description as p: colour var(--text-dark), font-size 0.8125rem, margin-top 0.25rem
-
-Card controls (.coffee-card__controls):
-  - Row of: minus button, quantity number, plus button
-  - Displayed at bottom of card body
-  - Minus (−) and Plus (+) buttons:
-      width/height 2rem, border-radius 50%, border none
-      background var(--red), colour var(--white), font-size 1.25rem
-      cursor pointer, font-weight 700
-  - Quantity number: min-width 2rem, text-align center, font-size 1rem, colour var(--blue-deep)
-  - Minus button disabled (opacity 0.4, pointer-events none) when quantity is 0
+Each card (.coffee-card): white background, border-radius 0.75rem, flex column.
+Milk pills row sits between description and +/− controls.
 
 ---
 
-Feat-004 | Quantity Badge on Card Image                               [done]
------------------------------------------
-A badge overlaid on the top-right corner of the card image.
-Only visible when the item's quantity in basket > 0.
-Style (.coffee-card__badge):
-  - Position: absolute, top 0.5rem, right 0.5rem
-  - Background: var(--gold)
-  - Colour: var(--black)
-  - Border-radius: 50%
-  - Width/height: 1.75rem
-  - Display: flex, align-items center, justify-content center
-  - Font-size: 0.875rem, font-weight: 700
-  - Pointer-events: none (decorative only)
-Only render the badge element when quantity > 0 (conditional render in JSX).
+Feat-005 | Quantity Badge on Card Image                              [done]
+----------------------------------------
+Gold badge, absolutely positioned top-right of image.
+Only rendered when qty > 0.
 
 ---
 
-Feat-005 | Page Header Bar                                            [done]
+Feat-006 | Page Header Bar                                           [done]
 ----------------------------
-A top bar on the coffeeType page containing three navigation controls.
-Rendered above the grid, full width.
-
-Left: Back button (←)
-  - onClick: navigate(-1) using useNavigate from react-router-dom
-  - Style: ghost button, border 1px solid var(--white), colour var(--white)
-
-Centre: Page title "Coffees" — h1, colour var(--gold), font-size 1.75rem
-
-Right side (two buttons side-by-side):
-  Tea button: routes to /tea, background var(--teal), colour var(--black)
-  Basket button: routes to /basket, background var(--gold), colour var(--black)
-    with running total badge (red circle) when basketCount > 0
+Back button (navigate(-1)), gold "Coffees" title, Tea + Basket nav links.
+Basket link shows red count badge when basketCount > 0.
 
 ---
 
-Feat-006 | Basket Page                                                [done — carried from EPIC-001]
--------------------------------
-Already implemented in EPIC-001 with full quantity controls and remove functionality.
-Location: src/website/pages/basket/basket.jsx
-Minor update in this epic: optional size field handled gracefully (only shown if present).
+Feat-007 | Basket Page — Per-Item Milk Display                       [done]
+------------------------------------------------------
+File: hafotty-coffi/src/website/pages/basket/basket.jsx
+
+Each basket item now shows item.milkChoice below the item name (teal text)
+when present. Tea items (no milkChoice field) show nothing extra.
+Global milkChoice row retained for tea's milk selection display.
 
 ---
 
-Feat-007 | Router Update                                              [done — carried from EPIC-001]
---------------------------
-Already completed in EPIC-001.
-Routes /basket and /coffee are registered. BasketProvider wraps the app in App.jsx.
+Feat-008 | Email — Milk Included in Order Items                      [done]
+---------------------------------------------------
+File: hafotty-coffi/src/website/components/sendOrder/sendOrder.jsx
+
+formattedOrderString now appends milk to each item line:
+  "Flat White x2 (Oat milk)"
+  "Espresso x1 (None milk)"
+  "English Breakfast x1"   ← tea items have no milkChoice, no suffix
 
 ---
 
-STOP AND TEST when all 7 features are marked done.
+Feat-009 | Router + Context                                          [done — carried from EPIC-001]
+------------------------------------
+Routes /coffee and /basket registered in routes.jsx.
+BasketProvider wraps the app in App.jsx.
+No changes needed.
+
+---
+
+STOP AND TEST when all 9 features are marked done.
 Verify:
   [ ] Coffee grid renders with all 10 images and names
-  [ ] Plus button adds item to basket, badge appears on card image
-  [ ] Minus button decrements quantity, badge disappears at 0
-  [ ] Minus button is disabled (greyed) when quantity is 0
-  [ ] Basket nav button in header shows running total badge
-  [ ] Navigating to /basket shows correct items and quantities
-  [ ] Back button returns to previous page
-  [ ] Tea button navigates to /tea
+  [ ] Each card shows 5 milk pills: Full Fat, Skimmed, Oat, Soy, None
+  [ ] Selected milk pill is highlighted gold
+  [ ] + button adds item with selected milk; badge appears on image
+  [ ] Changing milk pill after item is in basket updates its milk choice
+  [ ] − button decrements quantity; badge disappears at 0
+  [ ] Navigating to /basket shows items with milk choice shown per item
+  [ ] Email received shows milk per item: "Flat White x2 (Oat milk)"
+  [ ] Tea items in basket show no milk suffix in email
   [ ] Basket state persists when navigating between pages
-  [ ] Basket nav icon (top-right) also shows correct count

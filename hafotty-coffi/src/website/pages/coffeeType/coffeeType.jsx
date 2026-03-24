@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import useBasket from '../../components/basket/useBasket'
 import caffeMochaImg from '../../../assets/scss/images/coffeeDrink/caffe-mocha.png'
@@ -25,11 +26,62 @@ const COFFEES = [
   { id: 'iced-mocha',     name: 'Iced Mocha',        description: 'Cold espresso, chocolate, and milk over ice.',      image: icedMochaImg },
 ]
 
+const MILKS = ['Full Fat', 'Skimmed', 'Oat', 'Soy']
+
+function CoffeeCard({ coffee }) {
+  const { basket, addItem, updateQuantity } = useBasket()
+  const [localMilk, setLocalMilk] = useState('Full Fat')
+
+  const basketId = `${coffee.id}-${localMilk}`
+  const qty = basket.find(i => i.basketId === basketId)?.quantity ?? 0
+  const totalQty = basket.filter(i => i.id === coffee.id).reduce((sum, i) => sum + i.quantity, 0)
+
+  const handleMilkSelect = (milk) => setLocalMilk(milk)
+
+  return (
+    <div className="coffee-card">
+      <div className="coffee-card__img-wrap">
+        <img className="coffee-card__img" src={coffee.image} alt={coffee.name} />
+        {totalQty > 0 && (
+          <span className="coffee-card__badge">{totalQty}</span>
+        )}
+      </div>
+      <div className="coffee-card__body">
+        <h3 className="coffee-card__name">{coffee.name}</h3>
+        <p className="coffee-card__desc">{coffee.description}</p>
+        <div className="coffee-card__milk-pills">
+          {MILKS.map(milk => (
+            <button
+              key={milk}
+              className={`coffee-card__milk-pill${localMilk === milk ? ' coffee-card__milk-pill--active' : ''}`}
+              onClick={() => handleMilkSelect(milk)}
+            >
+              {milk}
+            </button>
+          ))}
+        </div>
+        <div className="coffee-card__controls">
+          <button
+            className="coffee-card__btn"
+            onClick={() => updateQuantity(basketId, qty - 1)}
+            disabled={qty === 0}
+            aria-label={`Remove one ${coffee.name}`}
+          >−</button>
+          <span className="coffee-card__qty">{qty}</span>
+          <button
+            className="coffee-card__btn"
+            onClick={() => addItem(coffee, localMilk)}
+            aria-label={`Add one ${coffee.name}`}
+          >+</button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 const CoffeeType = () => {
   const navigate = useNavigate()
-  const { basket, addToBasket, updateQuantity, basketCount } = useBasket()
-
-  const getQty = (id) => basket.find(i => i.id === id)?.quantity ?? 0
+  const { basketCount } = useBasket()
 
   return (
     <div className="coffee-type">
@@ -48,37 +100,9 @@ const CoffeeType = () => {
       </div>
 
       <div className="coffee-type__grid">
-        {COFFEES.map(coffee => {
-          const qty = getQty(coffee.id)
-          return (
-            <div key={coffee.id} className="coffee-card">
-              <div className="coffee-card__img-wrap">
-                <img className="coffee-card__img" src={coffee.image} alt={coffee.name} />
-                {qty > 0 && (
-                  <span className="coffee-card__badge">{qty}</span>
-                )}
-              </div>
-              <div className="coffee-card__body">
-                <h3 className="coffee-card__name">{coffee.name}</h3>
-                <p className="coffee-card__desc">{coffee.description}</p>
-                <div className="coffee-card__controls">
-                  <button
-                    className="coffee-card__btn"
-                    onClick={() => updateQuantity(coffee.id, qty - 1)}
-                    disabled={qty === 0}
-                    aria-label={`Remove one ${coffee.name}`}
-                  >−</button>
-                  <span className="coffee-card__qty">{qty}</span>
-                  <button
-                    className="coffee-card__btn"
-                    onClick={() => addToBasket(coffee)}
-                    aria-label={`Add one ${coffee.name}`}
-                  >+</button>
-                </div>
-              </div>
-            </div>
-          )
-        })}
+        {COFFEES.map(coffee => (
+          <CoffeeCard key={coffee.id} coffee={coffee} />
+        ))}
       </div>
     </div>
   )

@@ -1,15 +1,50 @@
 EPIC-002 — Bug Tracker
 =======================
 
-[No bugs logged yet.]
+Bug-001 | Same drink, different milk creates a single basket entry instead of two
+-----------------------------------------------------------------------------------
+Title:
+  Adding the same drink with different milk choices does not create separate basket entries.
 
----
-Bug entry template:
-  Title:
-  Repro steps:
-  Expected behaviour:
-  Actual behaviour:
-  Suspected cause:
-  Attempted fixes:
-  Final fix:
-  Status: not started | investigating | attempted | fixed | blocked
+Repro steps:
+  1. Go to the Coffee or Tea page.
+  2. Select "Oat" milk on a Flat White card and press +.
+  3. Switch the milk pill to "Full Fat" on the same card and press +.
+  4. Navigate to /basket.
+
+Expected behaviour:
+  Two separate line items:
+    Flat White x1 (Oat milk)
+    Flat White x1 (Full Fat milk)
+
+Actual behaviour:
+  One line item — the second add overwrites the milk on the existing entry:
+    Flat White x2 (Full Fat milk)
+
+Suspected cause:
+  addItem used item.id as the unique basket key. Both adds matched the same entry
+  regardless of milk choice, so the second add incremented quantity and updated
+  milkChoice on the same object.
+
+Attempted fixes:
+  None before root-cause analysis.
+
+Final fix:
+  Introduced a composite key: basketId = `${item.id}-${milkChoice}`
+  — stored on every basket item alongside the original id.
+  All basket operations (addItem, removeFromBasket, updateQuantity, updateMilkChoice)
+  now match on basketId instead of id.
+
+  updateMilkChoice(oldBasketId, newMilk) handles the case where the user changes
+  the milk pill on a card that is already in the basket:
+    - If an entry for the new milk already exists, quantities are merged.
+    - Otherwise the basketId is updated in place.
+
+  Card badge shows total quantity across all milks for that drink
+  (basket.filter(i => i.id === ...).reduce(...)).
+  Card +/− controls operate on the specific milk selection currently shown on the pill.
+
+  basket.jsx list key, updateQuantity, and removeFromBasket calls all updated
+  to use item.basketId.
+
+Status: fixed

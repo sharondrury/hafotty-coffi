@@ -1,7 +1,7 @@
 EPIC-002 — Coffee Type Page + Basket: Implementation Notes
 ============================================================
 Project: Hafotty Coffi
-Status: [x] Done
+Status: [x] Done (revised — per-card milk choice added)
 
 ---
 
@@ -25,27 +25,70 @@ What was implemented:
   image field references the imported variable (not a raw path string) so Vite
   handles hashing and asset pipeline correctly.
 
-Engine components considered: none applicable to data array.
+---
+
+Feat-002 | Basket Context — Per-Item Milk Choice
+--------------------------------------------------
+File:
+  hafotty-coffi/src/website/components/basket/basketContext.jsx
+
+What was implemented:
+  Two new actions added to the existing context:
+
+  addItem(item, milkChoice = 'Full Fat')
+    — Works like addToBasket but stores milkChoice on each basket entry.
+    — If item already exists, increments quantity AND updates milkChoice to the
+      latest selection (so changing the pill then clicking + keeps things in sync).
+
+  updateMilkChoice(id, milkChoice)
+    — Maps over basket and updates the milkChoice of the matching item.
+    — Called by CoffeeCard when the user selects a different milk pill and the
+      item is already in the basket.
+
+  Both new actions exposed in the Provider value alongside existing ones.
+  Existing addToBasket / updateQuantity / removeFromBasket / clearBasket retained
+  unchanged — teaType and other consumers are unaffected.
+  Global milkChoice / setMilkChoice retained for tea's global milk selection.
+
+Why two separate add functions:
+  addToBasket is used by teaType (no per-item milk). addItem is used by coffeeType
+  (per-item milk). Keeping both avoids a breaking change to teaType.
 
 ---
 
-Feat-002 | Basket Context
---------------------------
-Not re-implemented. Already exists from EPIC-001.
-Location: src/website/components/basket/basketContext.jsx + useBasket.js
-Existing API used as-is:
-  - basket (array)      → equivalent to items in this spec
-  - addToBasket(item)   → equivalent to addItem
-  - updateQuantity(id, qty) → used for decrement (handles removal when qty reaches 0)
-  - basketCount         → equivalent to totalCount
-coffeeType.jsx imports useBasket from '../../components/basket/useBasket'.
+Feat-003 | CoffeeCard Sub-Component with Milk Pills
+-----------------------------------------------------
+File:
+  hafotty-coffi/src/website/pages/coffeeType/coffeeType.jsx
+  hafotty-coffi/src/website/pages/coffeeType/coffeeType.scss
 
-Note: spec described this context at src/context/basketContext.jsx but the EPIC-001
-decision was to place it in src/website/components/basket/. No duplication created.
+What was implemented:
+  CoffeeCard extracted as a named function (not exported) inside coffeeType.jsx.
+  This keeps the file under the 250-line limit and follows single responsibility.
+
+  Local state pattern:
+    const basketItem = basket.find(i => i.id === coffee.id)
+    const [localMilk, setLocalMilk] = useState(basketItem?.milkChoice ?? 'Full Fat')
+
+  localMilk initialises from the basket entry if the item is already there, so
+  returning to the page after adding an item shows the correct selected pill.
+
+  Milk pills (MILKS constant above the component):
+    ['Full Fat', 'Skimmed', 'Oat', 'Soy', 'None']
+
+  handleMilkSelect(milk):
+    - Always updates localMilk state.
+    - If qty > 0, also calls updateMilkChoice to keep basket in sync.
+
+  + button: calls addItem(coffee, localMilk)
+  − button: calls updateQuantity(coffee.id, qty - 1) — unchanged
+
+  CoffeeType parent is now a thin wrapper: reads only basketCount, renders
+  the header bar and maps CoffeeCard. All card logic is in CoffeeCard.
 
 ---
 
-Feat-003 | Coffee Card Grid
+Feat-004 | Coffee Card Grid
 -----------------------------
 Files changed:
   hafotty-coffi/src/website/pages/coffeeType/coffeeType.jsx
@@ -53,23 +96,17 @@ Files changed:
 
 What was implemented:
   CSS Grid with auto-fill columns (minmax 14rem), gap 1.5rem, max-width 79.375rem.
-  Each .coffee-card: white background, border-radius 0.75rem, overflow hidden,
-  box-shadow, flex column layout so controls pin to the bottom of the card.
+  Card layout: white background, border-radius 0.75rem, flex column.
 
-  getQty helper defined in component:
-    const getQty = (id) => basket.find(i => i.id === id)?.quantity ?? 0
+  Milk pills row (.coffee-card__milk-pills) sits between description and controls.
+  Pills use flex-wrap so they reflow on narrow cards.
 
-  Plus button calls addToBasket(coffee) — adds item or increments quantity.
-  Minus button calls updateQuantity(coffee.id, qty - 1) — decrements; removes at 0.
-  Minus button has disabled attribute when qty === 0 (opacity 0.4, pointer-events none).
-
-Engine components considered:
-  - button.jsx: not used — card buttons need tight layout and custom shape (circle).
-    Custom .coffee-card__btn class used instead.
+  .coffee-card__milk-pill: ghost pill (blue-deep border), active state gold fill.
+  Tokens only — no hard-coded hex values.
 
 ---
 
-Feat-004 | Quantity Badge
+Feat-005 | Quantity Badge
 --------------------------
 Files changed:
   hafotty-coffi/src/website/pages/coffeeType/coffeeType.jsx
@@ -77,13 +114,12 @@ Files changed:
 
 What was implemented:
   Conditional render of .coffee-card__badge inside .coffee-card__img-wrap.
-  Badge is gold circle, absolutely positioned top-right of the image.
-  Only rendered when qty > 0 — disappears when item removed from basket.
-  pointer-events: none so it does not intercept clicks on the image area.
+  Gold circle, absolute top-right of image. Only rendered when qty > 0.
+  pointer-events: none — decorative only.
 
 ---
 
-Feat-005 | Page Header Bar
+Feat-006 | Page Header Bar
 ----------------------------
 Files changed:
   hafotty-coffi/src/website/pages/coffeeType/coffeeType.jsx
@@ -95,37 +131,50 @@ What was implemented:
   Title: "Coffees" in gold at 1.75rem.
   Nav group: Tea link (teal) and Basket link (gold).
   Basket link shows a red count badge when basketCount > 0.
-  Both nav links use React Router <Link> for native navigation.
-
-Engine components considered: none applicable.
 
 ---
 
-Feat-006 | Basket Page
-------------------------
-Not re-implemented. Already exists with full functionality from EPIC-001.
-Minor update applied: item.size is now conditionally rendered (only shown when present)
-so coffee items (which have no size) display cleanly.
-File changed: hafotty-coffi/src/website/pages/basket/basket.jsx
+Feat-007 | Basket Page — Per-Item Milk Display
+------------------------------------------------
+File:
+  hafotty-coffi/src/website/pages/basket/basket.jsx
+  hafotty-coffi/src/website/pages/basket/basket.scss
+
+What was implemented:
+  Each basket item row now conditionally renders item.milkChoice below the item name:
+    {item.milkChoice && <span className="basket-page__item-milk">{item.milkChoice} milk</span>}
+
+  .basket-page__item-milk: teal text, 0.8rem, weight 500.
+
+  Tea items (added via addToBasket) have no milkChoice field — the span does not render.
+  Global milkChoice row retained for tea's milk selection.
+
+  Also fixed: .basket-page__item-size previously used hard-coded #666;
+  updated to var(--text-dark) to comply with token-only rule.
 
 ---
 
-Feat-007 | Router Update
---------------------------
-Not re-implemented. Already completed in EPIC-001.
-Routes /coffee and /basket are registered in routes.jsx.
-BasketProvider wraps the app in App.jsx.
-No changes needed.
+Feat-008 | Email — Milk Included in Order Items
+-------------------------------------------------
+File:
+  hafotty-coffi/src/website/components/sendOrder/sendOrder.jsx
+
+What was implemented:
+  formattedOrderString now uses a conditional suffix per item:
+    const milkSuffix = i.milkChoice ? ` (${i.milkChoice} milk)` : ''
+    return `${i.name} x${i.quantity}${milkSuffix}`
+
+  Coffee items produce: "Flat White x2 (Oat milk)"
+  Tea items produce:    "English Breakfast x1"
 
 ---
 
 Tradeoffs and follow-up tasks:
-  - teaType page is still a stub — EPIC-003 should mirror this epic's pattern for tea.
-  - No size selection on coffee cards — if sizes are needed, add a size selector per
-    card in a future epic and update the basket item shape accordingly.
-  - Basket items from coffeeType include the image field — basket page could show
-    thumbnails in a future epic using item.image.
-  - EPIC-002 spec proposed a separate src/context/ folder for the basket context.
-    The EPIC-001 location (src/website/components/basket/) was kept to avoid duplication.
-    If a wider WebsiteContext is needed across future epics, consider promoting to
-    src/website/state/ at that point.
+  - EPIC-003 (teaType) still uses addToBasket + global milkChoice. A future
+    revision could add per-card milk pills to tea in the same pattern used here.
+  - localMilk in CoffeeCard initialises once from the basket. If the basket is
+    modified from another card or page and then the user returns, the pill state
+    is re-initialised from the basket on mount (correct). Mid-render changes from
+    external sources won't update the pill — acceptable for this scope.
+  - addItem and addToBasket do slightly different things. If a refactor is ever
+    needed, addToBasket could be replaced everywhere by addItem with no milk.
