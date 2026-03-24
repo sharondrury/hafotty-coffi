@@ -1,0 +1,54 @@
+@use '../../../assets/scss/ui/colours';
+
+.basket-nav {
+  position: fixed;
+  top: 1rem;
+  right: 1.5rem;
+  z-index: 200;
+}
+
+.basket-nav__btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  background: var(--gold);
+  border-radius: 50%;
+  color: var(--black);
+  text-decoration: none;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  box-shadow: 3px 3px 0 var(--black);
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 3px 5px 0 var(--black);
+  }
+
+  &:active {
+    transform: translateY(1px);
+    box-shadow: 2px 2px 0 var(--black);
+  }
+}
+
+.basket-nav__icon {
+  font-size: 1.25rem;
+}
+
+.basket-nav__count {
+  position: absolute;
+  top: -0.3rem;
+  right: -0.3rem;
+  background: var(--red);
+  color: var(--white);
+  font-size: 0.65rem;
+  font-weight: 700;
+  min-width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 0.625rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 0.2rem;
+}

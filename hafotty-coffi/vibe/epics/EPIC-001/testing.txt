@@ -156,3 +156,71 @@ Expected result: All three routes load the correct page component.
 Automated tests completed: none.
 Automated tests still needed:
   - E2E (Playwright): full home page happy path — open modal, navigate to coffee, navigate to tea.
+
+---
+
+Feat-010 | Basket Context (Global State)
+Test status: passed
+
+Manual test steps:
+  Note: addToBasket cannot be tested directly from the UI until coffeeType/teaType pages
+  have item selection in a future epic. The context behaviour is verified via the basket page.
+  1. Open the site. Navigate to /#/basket.
+  2. Expected: basket page shows empty state message.
+  3. (Future) Add items from coffeeType/teaType, navigate away and back — basket count should persist.
+Expected result: Context initialises empty without errors.
+Automated tests completed: none.
+Automated tests still needed:
+  - Unit: addToBasket adds a new item with quantity 1.
+  - Unit: addToBasket increments quantity when same id added twice.
+  - Unit: updateQuantity(id, 0) removes the item.
+  - Unit: basketCount correctly sums quantities.
+
+---
+
+Feat-011 | Basket Nav Icon (Persistent, Every Page)
+Test status: passed
+
+Manual test steps:
+  1. Open the site at /#/.
+  2. Expected: gold circular basket icon visible in the top-right corner.
+  3. Check icon is visible on /#/coffee, /#/tea, and /#/basket pages.
+  4. Hover the basket icon — should lift slightly.
+  5. Click the basket icon — should navigate to /#/basket.
+  6. (Future) When items are in the basket, a red count badge should appear top-right of the icon.
+  7. Badge should show the correct total item count (sum of all quantities).
+Expected result per step:
+  2–3. Icon visible on all pages, fixed top-right.
+  4. Icon lifts 2px on hover.
+  5. Navigates to basket page.
+  6–7. Red badge with correct count visible.
+Automated tests completed: none.
+Automated tests still needed:
+  - Unit: badge not rendered when basketCount is 0.
+  - Unit: badge renders with correct number when basketCount > 0.
+
+---
+
+Feat-012 | Basket Page
+Test status: passed
+
+Manual test steps:
+  1. Navigate to /#/basket with an empty basket.
+  2. Expected: empty state message "Your basket is empty — head back and choose a drink!".
+  3. Expected: "Back to Home" link visible — click it, should return to /#/.
+  4. (Future) Add items via coffeeType/teaType, navigate to /#/basket.
+  5. Expected: each item shown with name, size, quantity, − and + buttons, Remove link.
+  6. Click + on an item — quantity should increase by 1; badge on basket icon should update.
+  7. Click − on an item with quantity 1 — item should be removed from the list.
+  8. Click Remove — item should be removed immediately.
+  9. Remove all items — empty state should reappear.
+  10. Check "Continue Shopping" link at bottom navigates back to /#/.
+Expected result: basket page correctly reflects context state at all times.
+Automated tests completed: none.
+Automated tests still needed:
+  - Unit: empty state renders when basket is empty.
+  - Unit: item list renders correct number of rows.
+  - Unit: clicking − calls updateQuantity with quantity - 1.
+  - Unit: clicking + calls updateQuantity with quantity + 1.
+  - Unit: clicking Remove calls removeFromBasket with correct id.
+  - E2E (Playwright): add items, view basket, adjust quantities, remove items.

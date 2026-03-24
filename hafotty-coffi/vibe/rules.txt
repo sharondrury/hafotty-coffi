@@ -55,24 +55,6 @@ Styling and Theme Rules
 - Component styles must consume global tokens; avoid hard-coded hex values.
 - The theme system can evolve, but there must always be one global source of truth for colors and typography.
 
-- Before implementing any feature, review and decide if these can be reused:
-  - `src/engine/websiteContext/websiteContext.jsx`
-  - `src/engine/ui/bars/bars.jsx`
-  - `src/engine/ui/button/button.jsx`
-  - `src/engine/ui/modal/modal.jsx`
-  - `src/engine/ui/modal/modalContext.jsx`
-  - `src/engine/ui/slidePanel/slidePanel.jsx`
-  - `src/engine/ui/toast/toast.jsx`
-  - `src/engine/ui/tooltip/tooltip.jsx`
-  - `src/engine/utils/makeDecision/makeDecision.jsx`
-  - `src/engine/utils/rng/rng.jsx`
-  - `src/engine/utils/savewebsite/savewebsite.jsx`
-  - `src/engine/utils/timer/timer.jsx`
-- In implementation notes, explicitly record:
-  - Which engine parts were considered
-  - Which were used
-  - Why any were not used
-
 Definition of Done (per feature)
 - Feature behavior works as requested.
 - Reuse checklist completed and documented.
@@ -104,7 +86,6 @@ Epics and Files
   - After implementing a feature, add a short entry with:
     - Feature name
     - What was implemented
-    - Engine components considered/used/not used (with reasons)
     - Files changed
     - Any tradeoffs or follow-up tasks
 	- An explanation of what has been added - for learning purposes

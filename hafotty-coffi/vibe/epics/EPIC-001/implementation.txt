@@ -157,9 +157,75 @@ HashRouter intentionally for gh-pages compatibility. HashRouter was kept.
 
 ---
 
+Feat-010 | Basket Context (Global State)
+------------------------------------------
+Files changed:
+  hafotty-coffi/src/website/components/basket/basketContext.jsx  (created)
+  hafotty-coffi/src/App.jsx  (updated — wrapped with BasketProvider)
+
+What was implemented:
+  React Context (BasketContext) with useState holding the basket array.
+  BasketProvider exposes: basket, addToBasket, removeFromBasket, updateQuantity, basketCount.
+  addToBasket increments quantity if item already exists (matched by id), otherwise appends.
+  updateQuantity auto-removes the item when quantity drops to 0.
+  basketCount is a derived value (reduce over quantities) — not duplicated in state.
+  useBasket() hook exported for clean consumer usage.
+  BasketProvider wraps the full app in App.jsx so any component can access basket state.
+
+Engine components considered:
+  - websiteContext.jsx: rules reference this path (src/engine/websiteContext/) but the
+    engine folder was not created per project decision. Basket context placed in
+    src/website/components/basket/ instead, co-located with the basket UI. If a wider
+    website context is needed in a future epic, this can be promoted or merged then.
+
+---
+
+Feat-011 | Basket Nav Icon
+----------------------------
+Files changed:
+  hafotty-coffi/src/website/components/basket/basket.jsx  (created)
+  hafotty-coffi/src/website/components/basket/basket.scss  (created)
+  hafotty-coffi/src/routes.jsx  (updated — BasketNav added above <Routes>)
+
+What was implemented:
+  Basket icon button fixed to top-right corner on all pages (position: fixed).
+  Uses PrimeIcons pi-shopping-cart (already installed as a dependency).
+  Red count badge appears conditionally when basketCount > 0.
+  Rendered as BasketNav inside HashRouter but above <Routes> so it persists on every route.
+  Named BasketNav in routes.jsx import to distinguish from the basket page component (BasketPage).
+
+Engine components considered:
+  - bars.jsx: would be the intended home for this — but engine folder not created per
+    project decision. BasketNav placed in components/basket/ as the closest equivalent.
+    bars.jsx can be created in a future epic if a full navigation bar is needed.
+
+---
+
+Feat-012 | Basket Page
+------------------------
+Files changed:
+  hafotty-coffi/src/website/pages/basket/basket.jsx  (updated)
+  hafotty-coffi/src/website/pages/basket/basket.scss  (created)
+
+What was implemented:
+  Full basket page reads from useBasket() hook.
+  Renders each item with name, size, quantity controls (−/+) and Remove link.
+  updateQuantity handles removal when quantity hits 0.
+  Empty state shows a message and link back to home.
+  Footer shows total item count and a "Continue Shopping" link.
+
+Note: basket page import aliased as BasketPage in routes.jsx to avoid name clash with
+the BasketNav component that also lives in components/basket/basket.jsx.
+
+---
+
 Tradeoffs and follow-up tasks:
-  - MOCK_ORDERS in home.jsx is hardcoded. Wire to websiteContext in a future epic
-    when real order data flows through the app.
-  - coffeeType and teaType are stubs — full page content is a future epic.
+  - MOCK_ORDERS in home.jsx is hardcoded. Wire to basketContext/real order history
+    in a future epic when real order data flows through the app.
+  - coffeeType and teaType are stubs — full page content + addToBasket wiring is a future epic.
+  - Basket state is in-memory only (resets on page refresh). Add localStorage persistence
+    in a future epic if session survival is needed.
+  - BasketContext is currently basket-only. If wider app state is needed, promote to a
+    full WebsiteContext that also holds user, preferences, etc.
   - The engine modal (modal.jsx) was not used here; consider migrating to it when
     the app has multiple modals to manage centrally.

@@ -161,7 +161,57 @@ Import both new page components.
 
 ---
 
-STOP AND TEST when all 9 features are marked done.
+---
+
+Feat-010 | Basket Context (Global State)                              [done]
+------------------------------------------
+Create src/website/components/basket/basketContext.jsx.
+Holds basket state for the entire session — persists across all page navigation.
+State shape:
+  basket: array of { id, name, type, size, quantity }
+Exposed via BasketProvider and useBasket() hook:
+  - basket: current array of items
+  - addToBasket(item): adds item or increments quantity if id already exists
+  - removeFromBasket(id): removes item entirely
+  - updateQuantity(id, quantity): sets quantity; removes item if quantity <= 0
+  - basketCount: derived total number of individual items (sum of quantities)
+BasketProvider wraps the entire app in App.jsx.
+
+---
+
+Feat-011 | Basket Nav Icon (Persistent, Every Page)                   [done]
+-----------------------------------------------------
+Create src/website/components/basket/basket.jsx and basket.scss.
+A fixed position circular gold button in the top-right corner of every page.
+Shows a shopping cart icon (PrimeIcons pi-shopping-cart).
+Shows a red count badge when basketCount > 0.
+Links to /basket via React Router <Link>.
+Rendered inside HashRouter in routes.jsx, above <Routes>, so it appears on all pages.
+
+Style:
+  - Position: fixed, top 1rem, right 1.5rem, z-index 200
+  - Button: 3rem circle, gold background, black icon, box-shadow 3px 3px 0 black
+  - Hover: lifts 2px, shadow extends
+  - Count badge: red circle, white text, top-right of button, min-width for double digits
+
+---
+
+Feat-012 | Basket Page                                                [done]
+-----------------------
+Update src/website/pages/basket/basket.jsx and basket.scss.
+Reads basket state from useBasket() hook.
+Shows all items currently in the basket with quantity controls.
+Each item row:
+  - Left: item name + size
+  - Right: − qty + buttons, quantity display, Remove link
+Removing item when quantity reaches 0 via updateQuantity.
+Empty state: message + "Back to Home" link.
+Footer: total item count + "Continue Shopping" link back to /.
+Background: var(--blue-deep), titles in var(--gold).
+
+---
+
+STOP AND TEST when all 12 features are marked done.
 Verify:
   [ ] Home page renders centred on screen
   [ ] Colours from tokens only — no hex in jsx/scss files
@@ -170,3 +220,8 @@ Verify:
   [ ] Previous Orders button opens modal with 5 mock orders
   [ ] Modal closes on backdrop click and × button
   [ ] All button press animations work
+  [ ] Basket icon visible top-right on home, coffee, tea, and basket pages
+  [ ] Basket icon links to /basket
+  [ ] Basket page shows empty state when no items
+  [ ] basketCount badge appears only when items > 0
+  [ ] Basket state persists when navigating between pages

@@ -1,0 +1,150 @@
+@use '../../../assets/scss/ui/colours';
+
+.basket-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--blue-deep);
+  padding: 5rem 1.5rem 2rem;
+}
+
+.basket-page__inner {
+  width: 100%;
+  max-width: 40rem;
+}
+
+.basket-page__title {
+  color: var(--gold);
+  font-size: 2.5rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.basket-page__empty {
+  text-align: center;
+  color: var(--white);
+
+  p {
+    font-size: 1.1rem;
+    margin-bottom: 1.5rem;
+  }
+}
+
+.basket-page__list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1.5rem;
+}
+
+.basket-page__item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--white);
+  border-radius: 0.5rem;
+  padding: 1rem 1.25rem;
+  margin-bottom: 0.75rem;
+  gap: 1rem;
+}
+
+.basket-page__item-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.basket-page__item-name {
+  color: var(--text-dark);
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.basket-page__item-size {
+  color: #666;
+  font-size: 0.85rem;
+}
+
+.basket-page__item-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.basket-page__qty-btn {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  border: 2px solid var(--blue-deep);
+  background: none;
+  color: var(--blue-deep);
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s ease, color 0.15s ease;
+
+  &:hover {
+    background: var(--blue-deep);
+    color: var(--white);
+  }
+}
+
+.basket-page__qty {
+  min-width: 1.5rem;
+  text-align: center;
+  color: var(--text-dark);
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.basket-page__remove {
+  background: none;
+  border: none;
+  color: var(--crimson);
+  font-size: 0.8rem;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0 0.25rem;
+
+  &:hover {
+    color: var(--red);
+  }
+}
+
+.basket-page__footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.basket-page__total {
+  color: var(--white);
+  font-size: 1rem;
+
+  strong {
+    color: var(--gold);
+  }
+}
+
+.basket-page__back {
+  display: inline-block;
+  padding: 0.5rem 1.25rem;
+  border-radius: 0.375rem;
+  border: 1px solid var(--gold);
+  color: var(--gold);
+  text-decoration: none;
+  font-size: 0.875rem;
+  transition: background 0.15s ease, color 0.15s ease;
+
+  &:hover {
+    background: var(--gold);
+    color: var(--black);
+  }
+}
