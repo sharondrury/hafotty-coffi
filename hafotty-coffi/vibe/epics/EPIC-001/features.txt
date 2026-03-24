@@ -1,12 +1,12 @@
 EPIC-001 — Home Page
 ====================
 Project: Hafotty Coffi
-Files: hafotty-coffi/src/website/home/home.jsx + home.scss
+Files: hafotty-coffi/src/website/pages/home/home.jsx + home.scss
 Colour tokens: hafotty-coffi/src/assets/scss/ui/colours.scss
 
 ---
 
-Feat-001 | Colour Token Setup
+Feat-001 | Colour Token Setup                                         [done]
 ------------------------------
 Add all global colour variables to colours.scss.
 Tokens required:
@@ -23,9 +23,9 @@ All subsequent features reference only these tokens — no hard-coded hex values
 
 ---
 
-Feat-002 | Home Page Shell + Layout
+Feat-002 | Home Page Shell + Layout                                   [done]
 -------------------------------------
-Create home.jsx and home.scss in hafotty-coffi/src/website/home/.
+Create home.jsx and home.scss in hafotty-coffi/src/website/pages/home/.
 The home page is the full-screen centred container that all sections sit inside.
 Layout:
   - Full viewport height (min-height: 100vh)
@@ -37,7 +37,7 @@ Import colours.scss into home.scss.
 
 ---
 
-Feat-003 | Logo / Site Title Heading
+Feat-003 | Logo / Site Title Heading                                  [done]
 --------------------------------------
 Render the site name "Hafotty Coffi" as the primary H1 at the top of the home page.
 Style:
@@ -50,7 +50,7 @@ Style:
 
 ---
 
-Feat-004 | Sub Heading
+Feat-004 | Sub Heading                                                [done]
 ------------------------
 A sub heading below the H1 — suggested copy: "What will it be today?"
 Style:
@@ -62,7 +62,7 @@ Style:
 
 ---
 
-Feat-005 | Coffee & Tea Buttons (side by side)
+Feat-005 | Coffee & Tea Buttons (side by side)                        [done]
 ------------------------------------------------
 Two CTA buttons rendered horizontally next to each other.
 Labels: "Coffee" and "Tea"
@@ -94,7 +94,7 @@ Tea button routes to /tea via React Router <Link>.
 
 ---
 
-Feat-006 | Previous Orders Modal
+Feat-006 | Previous Orders Modal                                      [done]
 ----------------------------------
 A "Previous Orders" button placed below the two main CTA buttons.
 Style:
@@ -126,7 +126,7 @@ Mock data example array defined inline in home.jsx:
 
 ---
 
-Feat-007 | coffeeType Page
+Feat-007 | coffeeType Page                                            [done]
 ----------------------------
 Create hafotty-coffi/src/website/pages/coffeeType/coffeeType.jsx and coffeeType.scss.
 Follow the same file/folder format as other pages in the pages folder.
@@ -138,7 +138,7 @@ Route: /coffee
 
 ---
 
-Feat-008 | teaType Page
+Feat-008 | teaType Page                                               [done]
 -------------------------
 Create hafotty-coffi/src/website/pages/teaType/teaType.jsx and teaType.scss.
 Same format as coffeeType page (Feat-007).
@@ -149,7 +149,7 @@ Route: /tea
 
 ---
 
-Feat-009 | React Router Wiring
+Feat-009 | React Router Wiring                                        [done]
 --------------------------------
 Register all routes in the app entry point (App.jsx or equivalent router config).
 Routes to add:

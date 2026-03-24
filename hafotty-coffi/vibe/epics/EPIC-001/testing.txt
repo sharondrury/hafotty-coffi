@@ -1,19 +1,158 @@
-EPIC-001 — Testing
-===================
-
-[No test entries yet. Add an entry after each feature is implemented.]
+EPIC-001 — Home Page: Testing
+==============================
+Project: Hafotty Coffi
 
 ---
-Test entry template:
-  Feature name:
-  Manual test steps (written for a non-developer):
-    1.
-    2.
-    3.
-  Expected result per step:
-    1.
-    2.
-    3.
-  Automated tests completed:
-  Automated tests still needed:
-  Test status: not started | in progress | passed | failed | blocked
+
+Feat-001 | Colour Token Setup
+Test status: passed
+
+Manual test steps:
+  1. Open the site in a browser.
+  2. Inspect the <html> or <body> element in DevTools.
+  3. Check the :root block contains --gold, --blue-deep, --teal, --red, --crimson,
+     --white, --black, --text-dark with the correct hex values.
+Expected result:
+  All 8 tokens visible in DevTools with correct hex values.
+Automated tests completed: none.
+Automated tests still needed: none (CSS tokens verified visually).
+
+---
+
+Feat-002 | Home Page Shell + Layout
+Test status: passed
+
+Manual test steps:
+  1. Open the site at /.
+  2. Check the page background is deep blue.
+  3. Check all content is centred horizontally and vertically.
+  4. Resize the browser window — content should remain centred without overflow.
+Expected result per step:
+  1. Page loads without errors.
+  2. Background colour is #345995.
+  3. Content sits in the middle of the screen.
+  4. No horizontal scroll, content stays centred.
+Automated tests completed: none.
+Automated tests still needed: visual regression snapshot.
+
+---
+
+Feat-003 | Logo / Site Title Heading
+Test status: passed
+
+Manual test steps:
+  1. Open the site at /.
+  2. Check "Hafotty Coffi" appears as a large gold heading.
+  3. Inspect element — confirm font-size ~56px, color #EAC435.
+Expected result: Gold H1 heading visible at top of content.
+Automated tests completed: none.
+Automated tests still needed: none.
+
+---
+
+Feat-004 | Sub Heading
+Test status: passed
+
+Manual test steps:
+  1. Open the site at /.
+  2. Check "What will it be today?" appears in white below the main heading.
+  3. Check there is clear spacing between the sub heading and the buttons (~48px).
+Expected result: White sub heading with visible margin above the buttons.
+Automated tests completed: none.
+Automated tests still needed: none.
+
+---
+
+Feat-005 | Coffee & Tea Buttons
+Test status: passed
+
+Manual test steps:
+  1. Open the site at /.
+  2. Check two buttons — "Coffee" (red) and "Tea" (teal) — appear side by side.
+  3. Hover over the Coffee button — should darken to crimson and lift slightly.
+  4. Click and hold the Coffee button — should press down.
+  5. Click the Coffee button — should navigate to /#/coffee.
+  6. Press browser back. Repeat steps 3–4 for the Tea button.
+  7. Click the Tea button — should navigate to /#/tea.
+Expected result per step:
+  2. Both buttons visible, side by side with gap between them.
+  3. Background changes to #CA1551, button moves up 2px.
+  4. Button moves down 2px, shadow reduces.
+  5. URL changes to /#/coffee, Coffee Types page shows.
+  7. URL changes to /#/tea, Tea Types page shows.
+Automated tests completed: none.
+Automated tests still needed:
+  - Unit: Coffee Link href contains /coffee, Tea Link href contains /tea.
+
+---
+
+Feat-006 | Previous Orders Modal
+Test status: passed
+
+Manual test steps:
+  1. Open the site at /.
+  2. Check a small ghost button labelled "Previous Orders" appears below the CTA buttons.
+  3. Hover the button — background should fill gold, text should turn black.
+  4. Click "Previous Orders".
+  5. Check a dark backdrop and white modal card appear.
+  6. Check modal heading reads "Your Last Orders".
+  7. Check 5 orders are listed (Flat White, Earl Grey, Espresso, Green Tea, Cappuccino).
+  8. Check each row has drink + size on the left and a date on the right.
+  9. Click the × button (top right) — modal should close.
+  10. Open modal again. Click the dark backdrop — modal should close.
+  11. Click inside the modal card — modal should NOT close.
+Expected result per step:
+  2. Ghost button visible with gold border.
+  3. Button fills gold on hover.
+  4–8. Modal appears with correct content.
+  9. Modal closes.
+  10. Modal closes.
+  11. Modal stays open.
+Automated tests completed: none.
+Automated tests still needed:
+  - Unit: clicking "Previous Orders" sets ordersOpen to true.
+  - Unit: clicking × sets ordersOpen to false.
+  - Unit: clicking backdrop sets ordersOpen to false.
+  - Unit: clicking modal card does not set ordersOpen to false.
+  - Unit: MOCK_ORDERS renders 5 list items.
+
+---
+
+Feat-007 | coffeeType Page
+Test status: passed
+
+Manual test steps:
+  1. Click the "Coffee" button on the home page.
+  2. Check the URL changes to /#/coffee.
+  3. Check a full-screen deep blue page with centred "Coffee Types" heading in gold.
+Expected result: coffeeType stub page loads correctly.
+Automated tests completed: none.
+Automated tests still needed: none for stub.
+
+---
+
+Feat-008 | teaType Page
+Test status: passed
+
+Manual test steps:
+  1. Click the "Tea" button on the home page.
+  2. Check the URL changes to /#/tea.
+  3. Check a full-screen deep blue page with centred "Tea Types" heading in teal.
+Expected result: teaType stub page loads correctly.
+Automated tests completed: none.
+Automated tests still needed: none for stub.
+
+---
+
+Feat-009 | React Router Wiring
+Test status: passed
+
+Manual test steps:
+  1. Navigate directly to /#/ — home page loads.
+  2. Navigate directly to /#/coffee — coffeeType page loads.
+  3. Navigate directly to /#/tea — teaType page loads.
+  4. Use browser back/forward between pages — navigation works as expected.
+Expected result: All three routes load the correct page component.
+Automated tests completed: none.
+Automated tests still needed:
+  - E2E (Playwright): full home page happy path — open modal, navigate to coffee, navigate to tea.

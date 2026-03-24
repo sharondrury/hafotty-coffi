@@ -1,180 +1,165 @@
 EPIC-001 — Home Page: Implementation Notes
 ==========================================
 Project: Hafotty Coffi
-Status: [ ] In progress
+Status: [x] Done
 
 ---
 
 Feat-001 | Colour Token Setup
 ------------------------------
-File:
-  hafotty-coffi/src/assets/scss/ui/colours.scss
+Files changed:
+  hafotty-coffi/src/assets/scss/ui/colours.scss  (created)
+  hafotty-coffi/src/assets/scss/ui/typography.scss  (created)
+  hafotty-coffi/src/assets/scss/ui/_import.scss  (created)
+  hafotty-coffi/src/index.scss  (updated — uncommented @use imports)
 
-Add :root block with the following CSS custom properties:
-  --gold, --blue-deep, --teal, --red, --crimson, --white, --black, --text-dark
-All values listed in features.txt Feat-001.
-This file must be imported at the top of every component .scss file in this epic.
+What was implemented:
+  Added :root block to colours.scss with all 8 colour tokens (--gold, --blue-deep,
+  --teal, --red, --crimson, --white, --black, --text-dark).
+  Created typography.scss with base font tokens.
+  Created _import.scss partial that forwards both files.
+  Wired both into index.scss via @use so tokens are globally available.
+
+Engine components considered: none applicable for token setup.
+
+Notes:
+  CSS custom properties are globally scoped via :root — they are available everywhere
+  once colours.scss is loaded. Each feature scss still @use's colours.scss directly
+  as per the rules requirement, which also ensures SCSS compiler awareness.
 
 ---
 
 Feat-002 | Home Page Shell + Layout
 -------------------------------------
-Files:
-  hafotty-coffi/src/website/home/home.jsx
-  hafotty-coffi/src/website/home/home.scss
+Files changed:
+  hafotty-coffi/src/website/pages/home/home.jsx  (updated)
+  hafotty-coffi/src/website/pages/home/home.scss  (updated)
 
-home.jsx:
-  - Functional component, default export
-  - Import home.scss at top
-  - Top-level element: <div className="home">
-  - Children stack in order: logo (Feat-003), sub heading (Feat-004),
-    button row (Feat-005), previous orders button (Feat-006), modal (Feat-006)
-  - useState for modal open/close: const [ordersOpen, setOrdersOpen] = useState(false)
+What was implemented:
+  Full-screen flexbox column layout centred on --blue-deep background.
+  Inner wrapper with max-width 79.375rem and padding for responsive behaviour.
 
-home.scss:
-  - @use '../../../assets/scss/ui/colours.scss' (or @import depending on project setup)
-  - .home class: min-height 100vh, display flex, flex-direction column,
-    align-items center, justify-content center, background var(--blue-deep)
-  - Inner wrapper: max-width 79.375rem, margin 0 auto, padding 0 1.5rem,
-    display flex, flex-direction column, align-items center
+Engine components considered:
+  - websiteContext.jsx: not used — no shared state needed at this stage
+  - bars.jsx: not used — no nav bar in scope for this epic
+  All others: not applicable to layout shell.
 
 ---
 
 Feat-003 | Logo / Site Title Heading
 --------------------------------------
-Files:
-  hafotty-coffi/src/website/home/home.jsx  (add h1 element)
-  hafotty-coffi/src/website/home/home.scss (add .home__title styles)
+Files changed:
+  hafotty-coffi/src/website/pages/home/home.jsx
+  hafotty-coffi/src/website/pages/home/home.scss
 
-In home.jsx render: <h1 className="home__title">Hafotty Coffi</h1>
-In home.scss .home__title: font-size 3.5rem, font-weight 700, colour var(--gold),
-  text-align center, letter-spacing 0.05em, margin-bottom 0.5rem.
+What was implemented:
+  <h1 className="home__title"> renders "Hafotty Coffi" in --gold at 3.5rem/700 weight.
+
+Engine components considered: none applicable.
 
 ---
 
 Feat-004 | Sub Heading
 ------------------------
-Files:
-  hafotty-coffi/src/website/home/home.jsx
-  hafotty-coffi/src/website/home/home.scss
+Files changed:
+  hafotty-coffi/src/website/pages/home/home.jsx
+  hafotty-coffi/src/website/pages/home/home.scss
 
-In home.jsx render: <p className="home__sub">What will it be today?</p>
-In home.scss .home__sub: font-size 1.25rem, colour var(--white),
-  text-align center, margin-bottom 3rem, font-weight 400.
+What was implemented:
+  <p className="home__sub"> renders "What will it be today?" in --white at 1.25rem.
+
+Engine components considered: none applicable.
 
 ---
 
 Feat-005 | Coffee & Tea Buttons
 ---------------------------------
-Files:
-  hafotty-coffi/src/website/home/home.jsx
-  hafotty-coffi/src/website/home/home.scss
+Files changed:
+  hafotty-coffi/src/website/pages/home/home.jsx
+  hafotty-coffi/src/website/pages/home/home.scss
 
-In home.jsx:
-  - Import { Link } from 'react-router-dom'
-  - Render a <div className="home__actions"> wrapper
-  - Inside: <Link className="home__btn home__btn--coffee" to="/coffee">Coffee</Link>
-            <Link className="home__btn home__btn--tea" to="/tea">Tea</Link>
-  - Use <Link> not <button> so navigation is native
+What was implemented:
+  Two <Link> components styled as buttons using BEM modifier classes.
+  Coffee button: --red background, --crimson on hover, press-down active state.
+  Tea button: --teal background, brightness filter on hover, press-down active state.
+  Both use box-shadow 4px 4px 0 var(--black) for the solid shadow effect.
+  text-decoration: none applied to remove default Link underline.
 
-In home.scss:
-  .home__actions: display flex, gap 1.5rem, justify-content center
-  .home__btn: shared padding, border-radius, font-size, font-weight, cursor, transition, box-shadow styles
-  .home__btn--coffee: background var(--red), colour var(--white)
-  .home__btn--tea: background var(--teal), colour var(--black)
-  :hover and :active states per Feat-005 spec in features.txt.
-  text-decoration: none on .home__btn to remove Link underline.
+Engine components considered:
+  - button.jsx: considered but not used — the engine button is likely a <button> element;
+    these need to be <Link> components for native router navigation. Styling matches spec
+    more precisely with custom classes.
 
 ---
 
 Feat-006 | Previous Orders Modal
 ----------------------------------
-Files:
-  hafotty-coffi/src/website/home/home.jsx
-  hafotty-coffi/src/website/home/home.scss
+Files changed:
+  hafotty-coffi/src/website/pages/home/home.jsx
+  hafotty-coffi/src/website/pages/home/home.scss
 
-In home.jsx:
-  - Mock data const MOCK_ORDERS array (5 items) defined above the component
-  - useState: const [ordersOpen, setOrdersOpen] = useState(false)
-  - Render <button className="home__orders-btn" onClick={() => setOrdersOpen(true)}>
-      Previous Orders
-    </button>
-  - Conditional render: {ordersOpen && <div className="orders-backdrop" onClick={() => setOrdersOpen(false)}>
-      <div className="orders-modal" onClick={e => e.stopPropagation()}>
-        <button className="orders-modal__close" onClick={() => setOrdersOpen(false)}>×</button>
-        <h2>Your Last Orders</h2>
-        <ul>
-          {MOCK_ORDERS.map(order => <li key={order.id}>...)}</li>)}
-        </ul>
-      </div>
-    </div>}
-  - stopPropagation on modal card click prevents backdrop close firing
+What was implemented:
+  Ghost "Previous Orders" button triggering a useState-controlled overlay.
+  Backdrop click closes modal; stopPropagation on modal card prevents accidental close.
+  MOCK_ORDERS array (5 items) defined above component.
+  Each row shows drink + size on the left, date on the right, with border-bottom separator.
+  Empty state message included for future use when orders array is empty.
 
-In home.scss:
-  .home__orders-btn: ghost button styles
-  .orders-backdrop: position fixed, inset 0, background rgba(0,0,0,0.6), z-index 100,
-    display flex, align-items center, justify-content center
-  .orders-modal: background var(--white), border-radius 0.75rem, padding 2rem,
-    max-width 28rem, width 90%, position relative
-  .orders-modal__close: position absolute, top 1rem, right 1rem,
-    background none, border none, font-size 1.5rem, cursor pointer
+Engine components considered:
+  - modal.jsx / modalContext.jsx: considered — the engine modal was reviewed. For this
+    MVP home page the spec calls for a self-contained inline modal without needing a
+    global modal context or portal. Inline conditional render keeps the feature isolated
+    and easy to upgrade to the engine modal in a future epic when multiple modals exist.
 
 ---
 
 Feat-007 | coffeeType Page
 ----------------------------
-Files:
-  hafotty-coffi/src/website/pages/coffeeType/coffeeType.jsx
-  hafotty-coffi/src/website/pages/coffeeType/coffeeType.scss
+Files changed:
+  hafotty-coffi/src/website/pages/coffeeType/coffeeType.jsx  (updated)
+  hafotty-coffi/src/website/pages/coffeeType/coffeeType.scss  (created)
 
-coffeeType.jsx:
-  - Functional component, default export
-  - Import coffeeType.scss
-  - Render: <div className="coffee-type"><h1>Coffee Types</h1></div>
+What was implemented:
+  Stub page with full-screen --blue-deep background and centred "Coffee Types" H1 in --gold.
+  Follows same folder-per-page pattern as home.
 
-coffeeType.scss:
-  - @use colours.scss
-  - .coffee-type: min-height 100vh, display flex, align-items center,
-    justify-content center, background var(--blue-deep)
-  - h1: colour var(--gold), font-size 2.5rem, text-align center
+Engine components considered: none applicable to stub page.
 
 ---
 
 Feat-008 | teaType Page
 -------------------------
-Files:
-  hafotty-coffi/src/website/pages/teaType/teaType.jsx
-  hafotty-coffi/src/website/pages/teaType/teaType.scss
+Files changed:
+  hafotty-coffi/src/website/pages/teaType/teaType.jsx  (created)
+  hafotty-coffi/src/website/pages/teaType/teaType.scss  (created)
 
-teaType.jsx:
-  - Same structure as coffeeType.jsx (Feat-007)
-  - Render: <div className="tea-type"><h1>Tea Types</h1></div>
+What was implemented:
+  Stub page identical in structure to coffeeType. H1 colour is --teal per spec.
 
-teaType.scss:
-  - .tea-type: same layout as .coffee-type
-  - h1: colour var(--teal)
+Engine components considered: none applicable to stub page.
 
 ---
 
 Feat-009 | React Router Wiring
 --------------------------------
-File:
-  hafotty-coffi/src/App.jsx (or wherever the router is configured)
+Files changed:
+  hafotty-coffi/src/routes.jsx  (updated)
 
-Add imports:
-  import Home from './website/home/home'
-  import CoffeeType from './website/pages/coffeeType/coffeeType'
-  import TeaType from './website/pages/teaType/teaType'
+What was implemented:
+  Added /coffee → CoffeeType and /tea → TeaType routes.
+  Kept HashRouter (already in place — required for GitHub Pages deployment).
+  Kept existing /vessel and /basket routes untouched.
+  Removed the old /coffee-type route; Coffee now lives at /coffee per spec.
+  TeaType imported and added.
 
-Add routes:
-  <Route path="/"       element={<Home />} />
-  <Route path="/coffee" element={<CoffeeType />} />
-  <Route path="/tea"    element={<TeaType />} />
-
-Ensure BrowserRouter wraps all routes at root level.
-If App.jsx does not yet have a router, wrap the <Routes> block in <BrowserRouter>.
+Note: implementation.txt spec mentioned BrowserRouter but the project already uses
+HashRouter intentionally for gh-pages compatibility. HashRouter was kept.
 
 ---
 
-Dependency check:
-  react-router-dom must be installed: npm install react-router-dom
+Tradeoffs and follow-up tasks:
+  - MOCK_ORDERS in home.jsx is hardcoded. Wire to websiteContext in a future epic
+    when real order data flows through the app.
+  - coffeeType and teaType are stubs — full page content is a future epic.
+  - The engine modal (modal.jsx) was not used here; consider migrating to it when
+    the app has multiple modals to manage centrally.
