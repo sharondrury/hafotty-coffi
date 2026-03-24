@@ -1,15 +1,162 @@
-EPIC-004 — Implementation Log
-==============================
-
-[No entries yet. Add an entry after each feature is implemented.]
+EPIC-004 — EmailJS Order Sending: Implementation Notes
+=======================================================
+Project: Hafotty Coffi
+Status: [x] Done
 
 ---
-Entry template:
-  Feature name:
-  What was implemented:
-  Engine components considered: websiteContext / bars / button / modal / modalContext / slidePanel / toast / tooltip / makeDecision / rng / savewebsite / timer
-  Engine components used:
-  Engine components not used (reasons):
-  Files changed:
-  Tradeoffs / follow-up tasks:
-  Explanation (for learning):
+
+Feat-001 | EmailJS Installation
+---------------------------------
+Command run:
+  npm install @emailjs/browser
+
+Added to package.json dependencies.
+No initialisation call in main.jsx or App.jsx — the SDK is invoked per send call
+directly inside sendOrder.jsx using emailjs.send().
+
+Engine components considered: none applicable.
+
+Explanation:
+  @emailjs/browser is the official browser SDK. It handles the HTTP request to
+  EmailJS's API — no backend server or CORS configuration is needed on our side.
+
+---
+
+Feat-002 | Environment Variable
+---------------------------------
+Files created/edited:
+  .env            (created at project root — contains placeholder key)
+  .gitignore      (updated — .env and .env.* added)
+
+.env content:
+  VITE_EMAILJS_PUBLIC_KEY=YOUR_PUBLIC_KEY_HERE
+
+>>> DEVELOPER ACTION REQUIRED:
+    Replace YOUR_PUBLIC_KEY_HERE with the actual key from:
+    EmailJS Dashboard → Account → General → Public Key
+
+.gitignore now ignores .env and .env.* so the key is never committed.
+
+In code: import.meta.env.VITE_EMAILJS_PUBLIC_KEY
+  — Vite-specific. VITE_ prefix required for browser-bundle exposure.
+  — process.env does NOT work in Vite (Node/CRA syntax).
+
+GitHub Pages deployment:
+  The .env file is gitignored, so the GitHub Actions build will not have the key.
+  Fix: add VITE_EMAILJS_PUBLIC_KEY as a repository secret (Settings → Secrets →
+  Actions) and reference it in the workflow env block.
+
+---
+
+Feat-003 | sendOrder Component
+--------------------------------
+Files created:
+  hafotty-coffi/src/website/components/sendOrder/sendOrder.jsx
+  hafotty-coffi/src/website/components/sendOrder/sendOrder.scss
+
+What was implemented:
+  SERVICE_ID and TEMPLATE_ID defined as constants above the component function.
+  Props: items (array), onSuccess (fn), onError (fn).
+  State: customerName (string), sending (boolean), nameError (boolean).
+
+  handleSend flow:
+    1. Guard: empty customerName → setNameError(true), return early.
+    2. setSending(true).
+    3. Build formattedOrderString: items.map(i => `${i.name} x${i.quantity}`).join('\n').
+    4. emailjs.send(SERVICE_ID, TEMPLATE_ID, { customer_name, order_items }, PUBLIC_KEY).
+    5. .then → setSending(false), onSuccess().
+    6. .catch → setSending(false), onError().
+
+  onChange resets nameError to false as soon as the user types.
+  Button label switches between 'Send Order' and 'Sending...' based on sending state.
+  Error input class applied via template literal when nameError is true.
+
+Engine components considered: none applicable to form/send logic.
+
+Explanation:
+  sendOrder is self-contained — it owns all send state and validation. The parent
+  (basket.jsx) only needs to know about success/failure via callbacks, keeping the
+  basket page free of EmailJS concerns.
+
+---
+
+Feat-004 | clearBasket Action in Context
+------------------------------------------
+File changed:
+  hafotty-coffi/src/website/components/basket/basketContext.jsx
+
+Added:
+  const clearBasket = () => { setBasket([]) }
+Exposed in Provider value alongside existing actions.
+
+basket.jsx calls clearBasket via useEffect watching orderStatus === 'success':
+  useEffect(() => {
+    if (orderStatus === 'success') clearBasket()
+  }, [orderStatus])
+
+Timing rationale:
+  setOrderStatus('success') renders the success screen first. The useEffect fires
+  after the render, so clearBasket() empties the basket without causing the success
+  screen to switch back to the empty-basket state (because orderStatus === 'success'
+  is checked before basket.length).
+
+Engine components considered: none applicable.
+
+---
+
+Feat-005 | Basket Page Integration
+------------------------------------
+File changed:
+  hafotty-coffi/src/website/pages/basket/basket.jsx
+  hafotty-coffi/src/website/pages/basket/basket.scss
+
+What was implemented:
+  New state: const [orderStatus, setOrderStatus] = useState('idle')
+  clearBasket destructured from useBasket.
+
+  Render priority:
+    1. orderStatus === 'success' → success screen (early return). No list, no form.
+    2. basket.length === 0       → empty state (no form shown).
+    3. basket has items          → list + milk + footer + (error msg if error) + SendOrder.
+
+  Success screen: teal "Order sent!" message + gold "Back to Home" link.
+  Error message: red text above the form when orderStatus === 'error'.
+  SendOrder always rendered when basket has items (allows retry after error).
+
+  HTML entity &#39; used for the apostrophe in "We'll" to satisfy JSX linter.
+
+Engine components considered: none applicable to status rendering logic.
+
+Explanation:
+  The useEffect / clearBasket timing is the key design decision here — emptying the
+  basket inside onSuccess directly would make the success screen flash and immediately
+  show the empty-basket view. The effect defers the clear until after the next render.
+
+---
+
+Tradeoffs and follow-up tasks:
+  - orderStatus has no 'reset to idle' path other than page refresh. If retry UX needs
+    improving, add a Dismiss button that calls setOrderStatus('idle').
+  - formattedOrderString uses \n joins. If the EmailJS template is HTML, switch to
+    '<br>' joins so line breaks render correctly in the email body.
+  - milkChoice is not included in the email order string — add it to formattedOrderString
+    in a future pass if the café staff need to see the milk preference in the email.
+  - No server-side validation — client-side name check only. Acceptable for internal
+    trusted-user tool. If made public-facing, add a serverless proxy layer.
+  - Free tier EmailJS limit: 200 emails/month. Monitor usage in the dashboard.
+
+---
+
+NOTES & AFTERTHOUGHTS
+======================
+
+1. EmailJS template setup (developer must do this in EmailJS dashboard)
+   The template must contain {{customer_name}} and {{order_items}} exactly.
+   Suggested template body:
+     New order received from {{customer_name}}:
+     {{order_items}}
+   If the template is HTML-type, switch join('\n') to join('<br>') in sendOrder.jsx.
+
+2. GitHub Pages deployment
+   Add VITE_EMAILJS_PUBLIC_KEY as a GitHub Actions secret and reference it in the
+   workflow env block, otherwise the deployed site will not be able to send emails.

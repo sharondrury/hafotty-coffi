@@ -32,10 +32,14 @@ const BasketProvider = ({ children }) => {
     )
   }
 
+  const clearBasket = () => {
+    setBasket([])
+  }
+
   const basketCount = basket.reduce((sum, item) => sum + item.quantity, 0)
 
   return (
-    <BasketContext.Provider value={{ basket, addToBasket, removeFromBasket, updateQuantity, basketCount, milkChoice, setMilkChoice }}>
+    <BasketContext.Provider value={{ basket, addToBasket, removeFromBasket, updateQuantity, clearBasket, basketCount, milkChoice, setMilkChoice }}>
       {children}
     </BasketContext.Provider>
   )

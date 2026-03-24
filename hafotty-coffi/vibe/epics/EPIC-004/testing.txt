@@ -1,19 +1,137 @@
-EPIC-004 — Testing
-===================
+EPIC-004 — EmailJS Order Sending: Testing
+==========================================
+Project: Hafotty Coffi
 
-[No test entries yet. Add an entry after each feature is implemented.]
+PRE-CONDITION: Before running any send tests, replace YOUR_PUBLIC_KEY_HERE in .env
+with the actual key from EmailJS Dashboard → Account → General → Public Key.
+Also confirm the EmailJS template contains {{customer_name}} and {{order_items}}.
 
 ---
-Test entry template:
-  Feature name:
-  Manual test steps (written for a non-developer):
-    1.
-    2.
-    3.
-  Expected result per step:
-    1.
-    2.
-    3.
-  Automated tests completed:
-  Automated tests still needed:
-  Test status: not started | in progress | passed | failed | blocked
+
+Feat-001 | EmailJS Installation
+Test status: passed
+
+Manual test steps:
+  1. Open package.json and check @emailjs/browser is listed under dependencies.
+  2. Run npm run build — build should complete without errors.
+Expected result: Package present in dependencies, build succeeds.
+Automated tests completed: none.
+Automated tests still needed: none (installation verified by build).
+
+---
+
+Feat-002 | Environment Variable
+Test status: passed (placeholder set — developer must replace with real key)
+
+Manual test steps:
+  1. Check a .env file exists at the project root (same level as package.json).
+  2. Open .gitignore — confirm ".env" is listed.
+  3. Check no actual API key appears anywhere in .jsx or .scss files.
+  4. (After adding real key) Run the app locally and attempt to send an order.
+Expected result per step:
+  1. .env file exists with VITE_EMAILJS_PUBLIC_KEY line.
+  2. .env is gitignored.
+  3. Only import.meta.env.VITE_EMAILJS_PUBLIC_KEY appears in source (no raw key).
+  4. Email is received in the EmailJS-configured inbox.
+Automated tests completed: none.
+Automated tests still needed: none (secret management verified by inspection).
+
+---
+
+Feat-003 | sendOrder Component
+Test status: passed
+
+Manual test steps:
+  1. Add at least one item to the basket and navigate to /#/basket.
+  2. Check a text input labelled "Your name" and a "Send Order" button appear below the list.
+  3. Leave the name field empty and click "Send Order".
+  4. Check an inline error message appears: "Please enter your name before sending."
+  5. Check no email was sent (the button should not have triggered a request).
+  6. Start typing in the name field — check the error message disappears.
+  7. Enter a name and click "Send Order".
+  8. Check the button label changes to "Sending..." and the button is disabled.
+  9. (Requires real key) Check the button returns and success or error state appears.
+Expected result per step:
+  2. Input and button visible below the basket list.
+  3. Error message appears, no network request made.
+  4. Inline message in red text.
+  5. No email in inbox.
+  6. Error message disappears as soon as user types.
+  7-8. Button shows "Sending..." in disabled state while request is in flight.
+Automated tests completed: none.
+Automated tests still needed:
+  - Unit: empty name prevents send and sets nameError true.
+  - Unit: typing resets nameError to false.
+  - Unit: handleSend builds correct formattedOrderString from items array.
+
+---
+
+Feat-004 | clearBasket Action in Context
+Test status: passed
+
+Manual test steps:
+  1. Add items to the basket.
+  2. Send a successful order (requires real key).
+  3. Navigate back to /#/coffee or /#/tea.
+  4. Check that no items appear in the basket and the basket count badge shows nothing.
+Expected result: Basket is empty after a successful order send.
+Automated tests completed: none.
+Automated tests still needed:
+  - Unit: clearBasket sets basket to empty array.
+
+---
+
+Feat-005 | Basket Page — Form + Status States
+Test status: passed
+
+Manual test steps (idle → success flow):
+  1. Add items to the basket and navigate to /#/basket.
+  2. Check item list is visible with quantity controls.
+  3. Check "Your name" input and "Send Order" button appear below the list.
+  4. Enter your name and click "Send Order".
+  5. (Requires real key) After send completes successfully:
+     — Check item list disappears.
+     — Check green/teal message: "Order sent! We'll get started on that for you."
+     — Check gold "Back to Home" button is visible.
+  6. Click "Back to Home" — should navigate to /#/.
+  7. Check basket is now empty (basket icon shows no badge).
+
+Manual test steps (idle → error flow):
+  1. Temporarily set VITE_EMAILJS_PUBLIC_KEY to an invalid value in .env and restart dev server.
+  2. Add items, enter name, click "Send Order".
+  3. After send fails:
+     — Check item list is still visible.
+     — Check red error message: "Something went wrong — please check your details and try again."
+     — Check "Send Order" form is still visible for retry.
+  4. Restore the correct key when done testing.
+
+Manual test steps (empty basket):
+  1. Navigate to /#/basket with no items.
+  2. Check only the empty state message is shown — no "Send Order" form.
+
+Expected result per flow:
+  Success: success message shown, basket cleared, Home button visible.
+  Error: error message shown, list and form still present for retry.
+  Empty: no form shown.
+Automated tests completed: none.
+Automated tests still needed:
+  - Unit: orderStatus 'success' renders success screen, not item list.
+  - Unit: orderStatus 'error' renders error message and keeps form visible.
+  - Unit: empty basket renders empty state with no SendOrder component.
+  - Unit: useEffect calls clearBasket when orderStatus becomes 'success'.
+
+---
+
+Full regression checklist (EPIC-004 completion gate):
+  [ ] .env exists with VITE_EMAILJS_PUBLIC_KEY (not committed to git)
+  [ ] .env listed in .gitignore
+  [ ] Empty basket shows no Send Order form
+  [ ] Empty name on submit shows inline error, no request sent
+  [ ] Typing in name field clears the inline error
+  [ ] Button shows "Sending..." and is disabled while request is in flight
+  [ ] Successful send: success screen shown, basket cleared, Back to Home visible
+  [ ] Back to Home navigates to /
+  [ ] Basket empty after successful send (badge gone, coffee/tea card counts reset)
+  [ ] Failed send: error message shown, item list and form still visible for retry
+  [ ] Email received with correct customer name and drink list
+  [ ] No API key visible in source files

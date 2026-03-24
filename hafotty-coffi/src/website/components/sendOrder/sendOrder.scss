@@ -1,0 +1,62 @@
+@use '../../../assets/scss/ui/colours';
+
+.send-order {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 100%;
+  margin-top: 1.5rem;
+}
+
+.send-order__input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: 0.375rem;
+  border: 1px solid var(--gold);
+  background: transparent;
+  color: var(--white);
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.15s ease;
+  box-sizing: border-box;
+
+  &::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+  }
+
+  &:focus {
+    border-color: var(--white);
+  }
+
+  &--error {
+    border-color: var(--red);
+  }
+}
+
+.send-order__error {
+  color: var(--red);
+  font-size: 0.8125rem;
+  margin-top: -0.25rem;
+}
+
+.send-order__btn {
+  background: var(--gold);
+  color: var(--black);
+  border: none;
+  padding: 0.875rem 2rem;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  width: 100%;
+  transition: filter 0.15s ease;
+
+  &:hover:not(:disabled) {
+    filter: brightness(0.9);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}

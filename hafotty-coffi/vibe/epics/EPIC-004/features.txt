@@ -1,15 +1,133 @@
-EPIC-004 — Features
-===================
-
-[ ] Feature 1 — [feature name] — not started
-[ ] Feature 2 — [feature name] — not started
-[ ] Feature 3 — [feature name] — not started
+EPIC-004 — EmailJS Order Sending
+=================================
+Project: Hafotty Coffi
+Service ID: service_kg75p6l
+Template ID: template_3ajs1zq
 
 ---
-Stop implementation and begin testing when:
-- All features above are marked "in progress" or "done"
-- Core happy-path behaviour is working end-to-end
 
-How to test at that point:
-- Follow the steps in testing.txt for each completed feature
-- Run: npm run lint && npm run build
+Feat-001 | EmailJS Installation                                       [done]
+---------------------------------
+Install the EmailJS browser SDK as a project dependency.
+  npm install @emailjs/browser
+
+No initialisation call needed in main.jsx or App.jsx —
+the SDK is invoked directly inside sendOrder.jsx per send call.
+
+---
+
+Feat-002 | Environment Variable — Public Key                          [done]
+---------------------------------------------
+Store the EmailJS Public Key in a .env file at the project root (never hardcoded in source).
+File: .env
+  VITE_EMAILJS_PUBLIC_KEY=YOUR_PUBLIC_KEY_HERE
+
+>>> DEVELOPER ACTION REQUIRED:
+    Replace YOUR_PUBLIC_KEY_HERE with the actual key from:
+    EmailJS Dashboard → Account → General → Public Key
+
+.env added to .gitignore so the key is never committed to GitHub.
+In code, accessed via: import.meta.env.VITE_EMAILJS_PUBLIC_KEY
+(Vite convention — VITE_ prefix required for browser bundle exposure.)
+
+GitHub Pages deployment note:
+  Because .env is gitignored, the key will not be present in the GitHub Actions build.
+  Add it as a repository secret:
+    Settings → Secrets and variables → Actions → New repository secret
+    Name: VITE_EMAILJS_PUBLIC_KEY / Value: your actual public key
+  Reference it in the build workflow env block.
+
+---
+
+Feat-003 | sendOrder Component                                        [done]
+--------------------------------
+Files:
+  hafotty-coffi/src/website/components/sendOrder/sendOrder.jsx
+  hafotty-coffi/src/website/components/sendOrder/sendOrder.scss
+
+Self-contained component responsible for:
+  - Customer name input (controlled, with validation)
+  - Send Order button (disabled while sending)
+  - EmailJS.send() call
+  - Callback to parent (onSuccess / onError)
+
+Props: items (array), onSuccess (fn), onError (fn)
+Internal state: customerName, sending, nameError
+
+Validation:
+  - Empty name on submit: set nameError true, show inline message, do not send.
+  - nameError resets to false when user starts typing.
+
+Sending state:
+  - sending true while request is in flight.
+  - Button disabled, label shows "Sending..."
+
+formattedOrderString built before send:
+  items.map(i => `${i.name} x${i.quantity}`).join('\n')
+  Passed as order_items to the template.
+
+EmailJS call:
+  emailjs.send(SERVICE_ID, TEMPLATE_ID, { customer_name, order_items }, PUBLIC_KEY)
+
+Style tokens used: var(--gold), var(--white), var(--red), var(--black).
+All hex values forbidden — use tokens only.
+
+---
+
+Feat-004 | clearBasket Action in Context                              [done]
+-----------------------------------------
+File:
+  hafotty-coffi/src/website/components/basket/basketContext.jsx
+
+Add clearBasket function:
+  Calls setBasket([]) — resets basket to empty array.
+Exposed via context Provider value alongside existing actions.
+
+Timing: basket.jsx calls clearBasket via useEffect watching orderStatus === 'success',
+so the success screen renders before the basket clears (avoids flash to empty state).
+
+---
+
+Feat-005 | Basket Page — Form + Status States                         [done]
+------------------------------------------------------
+File:
+  hafotty-coffi/src/website/pages/basket/basket.jsx
+  hafotty-coffi/src/website/pages/basket/basket.scss
+
+New state: const [orderStatus, setOrderStatus] = useState('idle')
+           // 'idle' | 'success' | 'error'
+
+Render logic:
+  orderStatus === 'success':
+    Show success message + Back to Home link. No item list. No form.
+    clearBasket fires via useEffect (after success screen renders).
+
+  orderStatus === 'idle' or 'error', basket empty:
+    Show empty state message only.
+
+  orderStatus === 'idle' or 'error', basket has items:
+    Show item list + milk choice (if set) + footer.
+    If 'error': show error message above the form.
+    Show <SendOrder> below the list.
+
+SendOrder props:
+  onSuccess={() => setOrderStatus('success')}
+  onError={() => setOrderStatus('error')}
+
+New CSS classes:
+  .basket-page__status-success — teal, centred
+  .basket-page__status-error   — red, centred
+  .basket-page__home-btn       — gold filled button/link
+
+---
+
+STOP AND TEST when all 5 features are marked done.
+Verify:
+  [ ] .env file exists with VITE_EMAILJS_PUBLIC_KEY set (not committed to git)
+  [ ] .env is in .gitignore
+  [ ] Empty name on submit shows inline validation error, does not send
+  [ ] Send Order button shows "Sending..." while in flight
+  [ ] Successful send: success message shown, basket clears, Back to Home visible
+  [ ] Failed send: error message shown, form stays visible for retry
+  [ ] Email received contains customer name and formatted item list
+  [ ] No API key visible in any .jsx or .scss file

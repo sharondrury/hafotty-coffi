@@ -170,3 +170,39 @@
     color: var(--black);
   }
 }
+
+.basket-page__success {
+  text-align: center;
+  padding: 2rem 0;
+}
+
+.basket-page__status-success {
+  color: var(--teal);
+  font-size: 1.125rem;
+  text-align: center;
+  margin: 0 0 1.5rem;
+}
+
+.basket-page__status-error {
+  color: var(--red);
+  font-size: 1rem;
+  text-align: center;
+  margin: 1rem 0 0;
+}
+
+.basket-page__home-btn {
+  display: inline-block;
+  background: var(--gold);
+  color: var(--black);
+  padding: 0.75rem 2rem;
+  border-radius: 0.5rem;
+  font-weight: 700;
+  font-size: 1rem;
+  text-decoration: none;
+  margin-top: 1rem;
+  transition: filter 0.15s ease;
+
+  &:hover {
+    filter: brightness(0.9);
+  }
+}
