@@ -2,8 +2,8 @@ import emailjs from '@emailjs/browser'
 import { useState } from 'react'
 import './sendOrder.scss'
 
-const SERVICE_ID  = 'service_kg75p6l'
-const TEMPLATE_ID = 'template_3ajs1zq'
+const SERVICE_ID = "service_vdrnqgz";
+const TEMPLATE_ID = "template_m0wmzqt";
 
 const SendOrder = ({ items, onSuccess, onError }) => {
   const [customerName, setCustomerName] = useState('')

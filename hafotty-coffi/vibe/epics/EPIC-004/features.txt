@@ -1,7 +1,7 @@
 EPIC-004 — EmailJS Order Sending
 =================================
 Project: Hafotty Coffi
-Service ID: service_kg75p6l
+Service ID: service_0rdgu2y
 Template ID: template_3ajs1zq
 
 ---
